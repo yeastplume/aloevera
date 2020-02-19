@@ -1,6 +1,6 @@
 [![Build Status](https://dev.azure.com/yeastplume/aloevera/_apis/build/status/yeastplume.aloevera?branchName=master)](https://dev.azure.com/yeastplume/aloevera/_build/latest?definitionId=3&branchName=master)
-[![Release Version](https://img.shields.io/github/release/yeastplume/aloevera.svg)](https://github.com/yeastplume/aloevera/releases)
-[![License](https://img.shields.io/github/license/yeastplume/aloevera.svg)](https://github.com/yeastplume/aloevera/blob/master/LICENSE)
+[![Release Version](https://img.shields.io/github/v/release/yeastplume/aloevera)](https://github.com/yeastplume/aloevera/releases)
+[![License](https://img.shields.io/github/license/yeastplume/aloevera)](https://github.com/yeastplume/aloevera/blob/master/LICENSE)
 
 # Aloevera
 
