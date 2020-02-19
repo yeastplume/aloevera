@@ -6,7 +6,7 @@ The samples in this directory complement the examples found in the [Aloevera Usa
 
 `Make` must be installed and in your system path.
 
-For the time being, sample assembly code is only provided for ca65, the assembler tool of the [cc65 project](https://github.com/cc65/). If you're interested in running the assembly samples, you'll therefore need to have the tools `ca65` and `ld65` on your system path. Both these tools are provided as part of the `cc65` suite.
+For the time being, sample assembly code is only provided for ca65, the assembler tool of the [cc65 project](https://github.com/cc65/). If you're interested in running the assembly samples, you'll therefore need to have the tools `ca65` and `ld65` on your system path. Both of these tools are provided as part of the `cc65` suite.
 
 You'll also need the [x16 Emulator](https://github.com/commanderx16/x16-emulator/releases) and [ROM](https://github.com/commanderx16/x16-rom) available on your path. At the time of this writing, the target release for both is R36.
 
@@ -20,7 +20,7 @@ You'll need to configure a few paths in [Makefile.vars](Makefile.vars) as follow
 * set `X16_EMU` to the x16 emulator executable
 * set `X16_ROM` to the x16 rom
 
-The common Makefile provides a few other common flags you can tweak to your liking. 
+Makefile.vars provides a few other common flags you can tweak to your liking. 
 
 ## Running the samples
 

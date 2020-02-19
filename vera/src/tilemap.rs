@@ -302,7 +302,7 @@ impl VeraTileMap {
 			tiles: vec![],
 			imageset_entries: BTreeMap::new(),
 		};
-		// Tile Indicies init here
+		// Tile Indices init here
 		for (i, f) in imageset.frame_data.iter().enumerate() {
 			res.imageset_entries
 				.insert(f.calc_hash(), (i, f.pal_offset));
@@ -350,7 +350,7 @@ impl VeraTileMap {
 		clear_index: u8,
 	) -> Result<(), Error> {
 		self.tiles = vec![];
-		// load as we do for an imagemap
+		// load as we do for an imageset
 		let mut frames = vec![];
 		let (frames_per_row, frames_per_col) = png_to_frames(
 			&self.id,
