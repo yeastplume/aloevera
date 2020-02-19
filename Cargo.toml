@@ -28,5 +28,3 @@ failure_derive = "0.1"
 aloevera_util = { path = "./util", version = "0.0.1-alpha.1" }
 aloevera_proj = { path = "./proj", version = "0.0.1-alpha.1" }
 aloevera_vera = { path = "./vera", version = "0.0.1-alpha.1" }
-
-
