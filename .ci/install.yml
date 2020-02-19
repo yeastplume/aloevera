@@ -1,0 +1,9 @@
+steps:
+  - script: |
+      choco install -y llvm
+    displayName: Windows Install LLVM
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  - script: |
+      brew uninstall llvm
+    displayName: macOS Uninstall LLVM
+    condition: eq( variables['Agent.OS'], 'Darwin' )
