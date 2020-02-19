@@ -54,7 +54,7 @@ If you're looking for a place to contribute, the [issues](./issues) page should 
 
 # Who am I?
 
-I am Yeastplume. My main job is a full-time commitment to the completely free and open [Grin](https://github.com/mimblewimble/grin) cryptocurrency project (which I urge anyone even tangentally interested in cryptocurrencies to take a look at). My hobbies, however, are reflected by the much-higher-than-average number of Commodore computers and related hardware surrounding my workspace. 
+I am Yeastplume. My main job is a full-time commitment to the completely free and open [Grin](https://github.com/mimblewimble/grin) cryptocurrency project (which I urge anyone even tangentally interested in cryptocurrencies to take a look at). My hobbies, however, are reflected by the much-higher-than-average number of Commodore computers and related hardware surrounding my workspace.
 
 I'm a big fan of the X16 concept, particularly because I believe there's huge educational value in having a relatively popular 'modern' and available 8-bit machine that a single person can completely understand. I believe that if schools could find a way to incorporate at least some 6502-style coding into their curricula instead of fixating solely on whatever the popular language of the day is, they'd be doing their students a great service. In any case, I look forward to seeing where the X16 project goes, and am happy to contribute whatever spare cycles I can find to the community to help encourage its adoption. 
 
