@@ -10,12 +10,15 @@ For the time being, sample assembly code is only provided for ca65, the assemble
 
 You'll also need the [x16 Emulator](https://github.com/commanderx16/x16-emulator/releases) and [ROM](https://github.com/commanderx16/x16-rom) available on your path. At the time of this writing, the target release for both is R36.
 
+And of course, you'll need the Aloevera executable somewhere on your machine, either built locally or from a release.
+
 ## Configuring the samples
 
-You'll need to configure a few paths in [common/Makefile](common/Makefile) as follows:
+You'll need to configure a few paths in [Makefile.vars](Makefile.vars) as follows:
 
-* set X16_EMU to the x16 emulator executable
-* set X16_ROM to the x16 rom
+* set `ALOEVERA` to the built Aloevera executable (or you can just put Aloevera on your path and use `aloevera[.exe]` here)
+* set `X16_EMU` to the x16 emulator executable
+* set `X16_ROM` to the x16 rom
 
 The common Makefile provides a few other common flags you can tweak to your liking. 
 

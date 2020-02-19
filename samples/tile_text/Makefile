@@ -1,5 +1,5 @@
-NAME = poke_font
-ALOEVERA = "../../target/debug/aloevera"
+include ../Makefile.vars
+NAME = tile_text
 RESOURCES = pixel-font.png tilemap-banner-1bpp.png
 
 project.av: $(RESOURCES)

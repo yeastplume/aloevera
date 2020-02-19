@@ -1,5 +1,5 @@
+include ../Makefile.vars
 NAME = tile_wall
-ALOEVERA = "../../target/debug/aloevera"
 RESOURCES = tile_wall-map.png tile_wall-imageset-4bpp.png
 
 project.av: $(RESOURCES)

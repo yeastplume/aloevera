@@ -1,5 +1,6 @@
+include ../Makefile.vars
+
 NAME = sprites
-ALOEVERA = "../../target/debug/aloevera"
 RESOURCES = terra.png
 
 project.av: $(RESOURCES)

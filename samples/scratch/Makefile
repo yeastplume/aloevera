@@ -1,6 +1,5 @@
+include ../Makefile.vars
 NAME = scratch
-ALOEVERA = "../../target/debug/aloevera"
-#RESOURCES = pixel-font.png
 
 project.av:
 	$(ALOEVERA) create project.av

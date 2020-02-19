@@ -1,5 +1,6 @@
+include ../Makefile.vars
+
 NAME = poke_palette
-ALOEVERA = "../../target/debug/aloevera"
 RESOURCES = nes-palette.png
 
 project.av: $(RESOURCES)

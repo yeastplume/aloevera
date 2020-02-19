@@ -2,15 +2,7 @@
 # Don't run make from this directory, run
 # from subdirs
 
-# Common emulator flags and locations
-# Ensure the emulator and rom locations are for your system
-X16_EMU = "../../../x16-emulator/x16emu"
-X16_ROM = "../../../x16-rom/rom.bin"
-X16_EMU_FLAGS = -run -scale 2
-#DEBUG = -debug 092B
-
 X16_RUN = $(X16_EMU) -rom $(X16_ROM) $(X16_EMU_FLAGS) $(DEBUG)
-
 
 # Ensure ld65 and ca65 are on your path
 # Assembly flags

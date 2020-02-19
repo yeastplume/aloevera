@@ -1,5 +1,6 @@
+include ../Makefile.vars
+
 NAME = bitmap
-ALOEVERA = "../../target/debug/aloevera"
 RESOURCES = kq5.png
 
 project.av: $(RESOURCES)
