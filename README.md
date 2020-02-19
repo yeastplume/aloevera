@@ -50,7 +50,7 @@ in the project directory.
 
 Aloevera is a project put together over a few elapsed months in a very hobbyist capacity, and I'd expect that most development for the X16 will be purely spare-time stuff. Even so, it's hoped that other members of the X16 community will chip in as and when they can to help improve Aloevera and make it the best tool it can possibly be. Contributions and feedback are welcome and encouraged.
 
-If you're looking for a place to contribute, the [issues](./issues) page should contain quite a few pointers as to where to start. Or if there's a feature you think should be included that isn't, feel free to open an issue or PR yourself.
+If you're looking for a place to contribute, the [issues](https://github.com/yeastplume/aloevera/issues) page should contain quite a few pointers as to where to start. Or if there's a feature you think should be included that isn't, feel free to open an issue or PR yourself.
 
 # Who am I?
 
