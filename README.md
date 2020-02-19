@@ -1,7 +1,6 @@
-[![Build Status](https://dev.azure.com/mimblewimble/grin-wallet/_apis/build/status/mimblewimble.grin-wallet?branchName=master)](https://dev.azure.com/mimblewimble/grin-wallet/_build/latest?definitionId=3&branchName=master)
-[![](https://img.shields.io/badge/dynamic/json.svg?label=docs&uri=https%3A%2F%2Fcrates.io%2Fapi%2Fv1%2Fcrates%2Fgrin-wallet%2Fversions&query=%24.versions%5B0%5D.num&colorB=4F74A6)](https://docs.rs/releases/search?query=grin+wallet)
-[![Release Version](https://img.shields.io/github/release/mimblewimble/grin-wallet.svg)](https://github.com/mimblewimble/grin-wallet/releases)
-[![License](https://img.shields.io/github/license/mimblewimble/grin-wallet.svg)](https://github.com/mimblewimble/grin-wallet/blob/master/LICENSE)
+[![Build Status](https://dev.azure.com/yeastplume/aloevera/_apis/build/status/yeastplume.aloevera?branchName=master)](https://dev.azure.com/yeastplume/aloevera/_build/latest?definitionId=3&branchName=master)
+[![Release Version](https://img.shields.io/github/release/yeastplume/aloevera.svg)](https://github.com/yeastplume/aloevera/releases)
+[![License](https://img.shields.io/github/license/yeastplume/aloevera.svg)](https://github.com/yeastplume/aloevera/blob/master/LICENSE)
 
 # Aloevera
 
@@ -32,7 +31,7 @@ Assembly and BASIC samples are also provided for each example, along with instru
 
 # Binaries
 
-To use Aloevera, we recommend using the latest release from the [Releases page](https://github.com/mimblewimble/grin-wallet/releases). There are distributions for Linux, MacOS and Windows.
+To use Aloevera, we recommend using the latest release from the [Releases page](https://github.com/yeastplume/aloevera/releases). There are distributions for Linux, MacOS and Windows.
 
 # Building from Source
 
