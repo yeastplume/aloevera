@@ -1,0 +1,171 @@
+name: aloevera
+about: Graphic Asset Pipeline for the Commander X1
+author: Revcore Technologies Ltd.
+
+args:
+  - project_file:
+      help: The project file on which to operate
+      long: project_file
+      short: p
+      takes_value: true
+subcommands:
+  - create:
+      about: Create a new Aloevera project file
+      args:
+        - id:
+            help: Internal Id for the new project file
+            short: i
+            long: id
+            takes_value: true
+        - output_file:
+            help: Output file name
+            index: 1
+  - asm:
+     about: Assembles all resources in the project file
+     args:
+        - out_dir:
+            help: directory into which to place exported assembly
+            index: 1
+        - format:
+            help: Assembly export format
+            short: f
+            possible_values:
+              - ca65
+              - basic
+            default_value: ca65
+            takes_value: true
+  - palette:
+      about: Import and manipulate palette files
+      subcommands:
+        - import:
+            about: Import a palette into a project file
+            args:
+              - id:
+                  help: Internal ID for the new palette
+                  index: 1
+              - input_file:
+                  help: Input PNG file name
+                  index: 2
+  - imageset:
+      about: Import and manipulate image sets
+      subcommands:
+        - import:
+            about: Import an Imageset into a project file
+            args:
+              - id:
+                  help: Internal Id for the new image map
+                  index: 1
+              - frame_width:
+                  help: Width of an individual frame within the image
+                  index: 2
+              - frame_height:
+                  help: Height of an individual frame within the image
+                  index: 3
+              - input_file:
+                  help: Input Imageset PNG file name
+                  index: 4
+        - format:
+            about: Formats an imageset to a target depth with a given palette
+            args:
+              - imageset_id:
+                  help: ID of the imageset (must be contained within project file)
+                  index: 1
+              - palette_id:
+                  help: ID of the palette to use for formatting (Must be contained within the project file)
+                  index: 2
+              - pixel_depth:
+                  help: Target Pixel Depth (8, 4, 2 or 1)
+                  index: 3
+  - tilemap:
+      about: Import and manipulate tilemaps
+      subcommands:
+        - init:
+            about: Init a new tilemap in the project file
+            args:
+              - id:
+                  help: Internal ID for the new tile map
+                  index: 1
+              - imageset_id:
+                  help: ID of the imageset used by the tile map
+                  index: 2
+              - map_width:
+                  help: Width of the target map mode
+                  index: 3
+                  possible_values:
+                    - "32"
+                    - "64"
+                    - "128"
+                    - "256"
+              - map_height:
+                  help: Height of the target map mode
+                  index: 4 
+                  possible_values:
+                    - "32"
+                    - "64"
+                    - "128"
+                    - "256"
+              - display_mode:
+                  help: Target layer display mode
+                  index: 5
+                  possible_values:
+                    - text_16
+                    - text_256
+                    - tile_2bpp
+                    - tile_4bpp
+                    - tile_8bpp
+        - load:
+            about: Loads tilemap data from an image (and palette in 1bpp modes)
+            args:
+              - id:
+                  help: ID of the target tilemap in the project file
+                  index: 1
+              - palette_id:
+                  help: For 1BPP modes only, ID of the palette to use for foreground/background colour definitions
+                  long: palette_id
+                  short: p
+                  takes_value: true
+              - input_file:
+                  help: Input Tilemap PNG file name
+                  index: 2
+              - start_x:
+                  help: The X position on the map base into which to place the tilemap
+                  long: start_x
+                  short: x
+                  takes_value: true
+                  default_value: "0"
+              - start_y:
+                  help: The X position on the map base into which to place the tilemap
+                  long: start_y
+                  short: y
+                  takes_value: true
+                  default_value: "0"
+              - clear_index:
+                  help: The default background colour index use for 'off' in 1bpp modes
+                  long: clear_index
+                  short: c
+                  takes_value: true
+                  default_value: "0"
+  - sprite:
+      about: Interpret an existing Imageset as a Sprite
+      subcommands:
+        - init:
+            about: Initialize a Sprite from an existing Imageset
+            args:
+              - id:
+                  help: Internal Id for the new Sprite
+                  index: 1
+              - imageset_id:
+                  help: ID of the existing, formatted Imageset to use as a Sprite
+                  index: 2
+  - bitmap:
+      about: Interpret an existing Imageset as a Bitmap
+      subcommands:
+        - init:
+            about: Initialize a Bitmap from an existing Imageset
+            args:
+              - id:
+                  help: Internal Id for the new Bitmap
+                  index: 1
+              - imageset_id:
+                  help: ID of the existing, formatted Imageset to use as a Bitmap
+                  index: 2

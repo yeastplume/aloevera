@@ -1,0 +1,14 @@
+*.log
+*.swp
+.DS_Store
+*target/
+*/Cargo.lock
+*.iml
+*.map
+*.o
+*.prg
+*.av
+.idea/
+.build/
+*output/
+*.assembled.bas
