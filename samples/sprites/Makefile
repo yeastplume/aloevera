@@ -12,6 +12,7 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av sprite init terra_sprite terra_imageset
 	$(ALOEVERA) -p project.av asm ./output/
 	$(ALOEVERA) -p project.av asm -f basic ./output/
+	$(ALOEVERA) -p project.av asm -f bin ./output/
 
 generate_resources: project.av
 

@@ -81,9 +81,9 @@ pub fn parse_global_args(args: &ArgMatches) -> Result<GlobalArgs, Error> {
 	})
 }
 
-pub fn output_to_file(path: &str, data: &str) -> Result<(), Error> {
+pub fn output_to_file(path: &str, data: &[u8]) -> Result<(), Error> {
 	let mut file = File::create(&path)?;
-	file.write_all(data.as_bytes())?;
+	file.write_all(data)?;
 	Ok(())
 }
 

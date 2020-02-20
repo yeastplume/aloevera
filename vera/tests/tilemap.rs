@@ -68,9 +68,9 @@ fn tilemap_32_x_32_x_16_8bpp() -> Result<(), Error> {
 	let code = tilemap.assemble()?;
 	println!("palette: {}", palette);
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 
 	Ok(())
 }
@@ -115,9 +115,9 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 
 	let code = tilemap.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 
 	// Init tilemap again for 1BPP 256 mode
 	let mut tilemap = VeraTileMap::init_from_imageset(
@@ -135,9 +135,9 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 	// and output in format 1
 	let code = tilemap.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 
 	Ok(())
 }
@@ -182,9 +182,9 @@ fn tilemap_128_x_32_x_16_4bpp() -> Result<(), Error> {
 	println!("{}", tilemap);
 	let code = tilemap.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
-	println!("{}", asm.to_string(None));
+	println!("{}", asm.to_string(None)?);
 
 	Ok(())
 }

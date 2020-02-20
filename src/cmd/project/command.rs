@@ -30,7 +30,7 @@ pub fn create_project(args: &CreateProjectArgs) -> Result<(), Error> {
 
 	let proj = AloeVeraProject::new(id);
 	let json = proj.to_json()?;
-	crate::cmd::common::output_to_file(&args.output_file, &json)?;
+	crate::cmd::common::output_to_file(&args.output_file, &json.as_bytes())?;
 
 	Ok(())
 }

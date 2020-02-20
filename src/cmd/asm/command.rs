@@ -37,17 +37,24 @@ where
 		let code = v.assemble()?;
 		let asm_meta = code.assemble_meta(output_format.clone())?;
 		let meta_lc = asm_meta.line_count();
-		let asm_data = code.assemble_data(output_format.clone())?;
-		let data_lc = asm_data.line_count();
-		let mut output = asm_meta.to_string(Some(*line_start));
-		output = format!(
-			"{}{}",
-			output,
-			asm_data.to_string(Some(*line_start + meta_lc))
-		);
-		let file_name = format!("{}/{}.{}.inc", out_dir, v.id(), output_format);
-		common::output_to_file(&file_name, &output)?;
-		*line_start += meta_lc + data_lc;
+		let (output, ext) = if *output_format == AsmFormat::Bin {
+			let file_name = format!("{}/{}.bin", out_dir, v.id());
+			common::output_to_file(&file_name, &code.data)?;
+			(asm_meta.to_string(None)?, "meta")
+		} else {
+			let asm_data = code.assemble_data(output_format.clone())?;
+			let data_lc = asm_data.line_count();
+			let output = asm_meta.to_string(Some(*line_start))?;
+			let res = format!(
+				"{}{}",
+				output,
+				asm_data.to_string(Some(*line_start + meta_lc))?
+			);
+			*line_start += meta_lc + data_lc;
+			(res, "inc")
+		};
+		let file_name = format!("{}/{}.{}.{}", out_dir, v.id(), output_format, ext);
+		common::output_to_file(&file_name, output.as_bytes())?;
 	}
 	Ok(())
 }

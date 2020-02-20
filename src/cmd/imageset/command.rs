@@ -26,7 +26,7 @@ fn insert_imageset(
 	//info!("Inserting imageset into project: {}", project_file);
 	let mut proj = crate::cmd::common::load_project(project_file.clone())?;
 	proj.imagesets.insert(id.into(), imageset.clone());
-	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_json()?)?;
+	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_json()?.as_bytes())?;
 	Ok(())
 }
 

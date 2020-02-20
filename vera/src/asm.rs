@@ -30,12 +30,14 @@ pub trait Assemblable {
 }
 
 /// Enum for variations ToAsm implementors can assemble to
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum AsmFormat {
 	/// To Basic
 	Basic,
 	/// ca65 assembly
 	Ca65,
+	/// Raw Binary file
+	Bin,
 }
 
 impl fmt::Display for AsmFormat {
@@ -43,6 +45,7 @@ impl fmt::Display for AsmFormat {
 		let out = match self {
 			AsmFormat::Basic => "basic",
 			AsmFormat::Ca65 => "ca65",
+			AsmFormat::Bin => "bin",
 		};
 		write!(f, "{}", out)
 	}
@@ -55,6 +58,7 @@ impl FromStr for AsmFormat {
 		match s.to_lowercase().as_str() {
 			"ca65" => Ok(AsmFormat::Ca65),
 			"basic" => Ok(AsmFormat::Basic),
+			"bin" => Ok(AsmFormat::Bin),
 			other => Err(ErrorKind::UnknownAsmFormat(other.to_owned()).into()),
 		}
 	}
@@ -84,7 +88,7 @@ impl AssembledString {
 	}
 
 	/// Output final string
-	pub fn to_string(self, line_start: Option<usize>) -> String {
+	pub fn to_string(self, line_start: Option<usize>) -> Result<String, Error> {
 		let line_start = match line_start {
 			Some(v) => v,
 			None => 1,
@@ -94,9 +98,11 @@ impl AssembledString {
 			retval += &match self.target_format {
 				AsmFormat::Ca65 => format!("{}\n", l),
 				AsmFormat::Basic => format!("{} {}\n", line_start + i, l),
+				// only metadata should get to this stage
+				AsmFormat::Bin => format!("{}\n", l),
 			}
 		}
-		retval
+		Ok(retval)
 	}
 
 	/// number of lines
@@ -113,7 +119,7 @@ pub struct AssembledPrimitive {
 	/// to load
 	meta: Vec<String>,
 	/// Assembled raw binary data
-	data: Vec<u8>,
+	pub data: Vec<u8>,
 }
 
 impl AssembledPrimitive {
@@ -150,6 +156,7 @@ impl AssembledPrimitive {
 			retval.add(match out_format {
 				AsmFormat::Ca65 => format!(";{}", m),
 				AsmFormat::Basic => format!("REM {}", m.to_uppercase()),
+				AsmFormat::Bin => format!(";{}", m),
 			});
 		}
 		Ok(retval)
@@ -163,6 +170,12 @@ impl AssembledPrimitive {
 			curval += &match out_format {
 				AsmFormat::Ca65 => format!(".byte "),
 				AsmFormat::Basic => format!("DATA "),
+				AsmFormat::Bin => {
+					return Err(ErrorKind::InvalidAsmFormat(
+						"Attempt to format binary data as string".into(),
+					)
+					.into());
+				}
 			};
 			for j in 0..8 {
 				let index = i + j;
@@ -172,6 +185,12 @@ impl AssembledPrimitive {
 				curval += &match out_format {
 					AsmFormat::Ca65 => format!("${:02X}", self.data[index]),
 					AsmFormat::Basic => format!("{}", self.data[index]),
+					AsmFormat::Bin => {
+						return Err(ErrorKind::InvalidAsmFormat(
+							"Attempt to format binary data as string".into(),
+						)
+						.into());
+					}
 				};
 				if j < 7 && index < self.data.len() - 1 {
 					curval += ",";
@@ -194,11 +213,11 @@ fn test_assemble() -> Result<(), Error> {
 	let mut line_count = 1;
 	let meta_strs = prim.assemble_meta(AsmFormat::Basic)?;
 	let num_lines = meta_strs.line_count();
-	let meta_str = meta_strs.to_string(Some(line_count));
+	let meta_str = meta_strs.to_string(Some(line_count))?;
 	line_count += num_lines;
 
 	let data_strs = prim.assemble_data(AsmFormat::Basic)?;
-	let data_str = data_strs.to_string(Some(line_count));
+	let data_str = data_strs.to_string(Some(line_count))?;
 
 	println!("Meta Basic");
 	println!("{}", meta_str);
@@ -208,10 +227,10 @@ fn test_assemble() -> Result<(), Error> {
 	assert!(data_str.ends_with("8 DATA 16,16\n"));
 
 	let meta_strs = prim.assemble_meta(AsmFormat::Ca65)?;
-	let meta_str = meta_strs.to_string(None);
+	let meta_str = meta_strs.to_string(None)?;
 
 	let data_strs = prim.assemble_data(AsmFormat::Ca65)?;
-	let data_str = data_strs.to_string(None);
+	let data_str = data_strs.to_string(None)?;
 
 	println!("Meta Ca65");
 	println!("{}", meta_str);

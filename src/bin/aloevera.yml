@@ -32,6 +32,7 @@ subcommands:
             possible_values:
               - ca65
               - basic
+              - bin
             default_value: ca65
             takes_value: true
   - palette:

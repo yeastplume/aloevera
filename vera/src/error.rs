@@ -40,6 +40,9 @@ pub enum ErrorKind {
 	/// Unknown ASM format string
 	#[fail(display = "Unknown ASM Format: {}", _0)]
 	UnknownAsmFormat(String),
+	/// Invalid ASM Format
+	#[fail(display = "Invalide ASM Format: {}", _0)]
+	InvalidAsmFormat(String),
 	/// PNG Decoding Error
 	#[fail(display = "PNG Decoding error: {}", _0)]
 	PNGDecoding(String),
