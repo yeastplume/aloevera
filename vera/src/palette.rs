@@ -13,7 +13,7 @@
 
 //! Vera Palette definition
 
-use crate::{AsmFormat, Assemblable};
+use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
 use std::fmt;
 
@@ -287,33 +287,18 @@ impl VeraPalette {
 }
 
 impl Assemblable for VeraPalette {
-	fn assemble(&self, out_format: &AsmFormat, line_start: &mut usize) -> Result<String, Error> {
-		let mut retval = match out_format {
-			AsmFormat::Ca65 => format!("\n;{} size is {}", self.id, self.size()),
-			AsmFormat::Basic => format!("\n{} REM SIZE IS {}", line_start, self.size()),
-		};
-		retval += "\n";
-		*line_start += 1;
-		let mut out_lines = 0;
-		for (i, e) in self.entries.iter().enumerate() {
-			let line_prefix = match out_format {
-				AsmFormat::Ca65 => ".byte ".to_owned(),
-				AsmFormat::Basic => format!("{} DATA ", *line_start + i / 4),
-			};
-			if i % 4 == 0 {
-				retval += &format!("\n{}", line_prefix);
-				out_lines += 1;
-			} else {
-				retval += ","
-			}
+	fn id(&self) -> &str {
+		&self.id
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
+		let mut retval = AssembledPrimitive::new();
+		retval.add_meta(format!("{} - size is {}", self.id, self.size()));
+		for e in self.entries.iter() {
 			let mut off_0 = e.g << 4;
 			off_0 |= e.b;
-			match out_format {
-				AsmFormat::Ca65 => retval += &format!("${:02X},${:02X}", off_0, e.r),
-				AsmFormat::Basic => retval += &format!("{},{}", off_0, e.r),
-			}
+			retval.add_data(&[off_0, e.r]);
 		}
-		*line_start += out_lines;
 		Ok(retval)
 	}
 }
@@ -383,10 +368,12 @@ mod test {
 	#[test]
 	fn palette_assemble() -> Result<(), Error> {
 		let palette = VeraPalette::default();
-		let mut line_start = 10000;
-		let code = palette.assemble(&AsmFormat::Ca65, &mut line_start)?;
+		let code = palette.assemble()?;
 		println!("palette: {}", palette);
-		println!("asm:\n{}", code);
+		let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+		println!("{}", asm.to_string(None));
+		let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+		println!("{}", asm.to_string(None));
 		Ok(())
 	}
 }

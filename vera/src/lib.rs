@@ -27,9 +27,7 @@ extern crate aloevera_util as util;
 #[macro_use]
 extern crate serde_derive;
 
-use std::fmt;
-use std::str::FromStr;
-
+mod asm;
 mod bitmap;
 mod error;
 mod imageset;
@@ -38,6 +36,7 @@ mod png_util;
 mod sprite;
 mod tilemap;
 
+pub use asm::{AsmFormat, Assemblable, AssembledPrimitive};
 pub use bitmap::VeraBitmap;
 pub use error::{Error, ErrorKind};
 pub use imageset::{VeraImage, VeraImageSet, VeraImageSetLoadConfig, VeraPixelDepth};
@@ -45,39 +44,3 @@ pub use palette::{VeraPalette, VeraPaletteEntry, VeraPaletteLoadConfig};
 pub use png_util::png_to_frames;
 pub use sprite::VeraSprite;
 pub use tilemap::{VeraTileMap, VeraTileMapDim, VeraTileMapMode};
-
-/// Enum for variations ToAsm implementors can assemble to
-pub enum AsmFormat {
-	/// To Basic
-	Basic,
-	/// ca65 assembly
-	Ca65,
-}
-
-impl fmt::Display for AsmFormat {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let out = match self {
-			AsmFormat::Basic => "basic",
-			AsmFormat::Ca65 => "ca65",
-		};
-		write!(f, "{}", out)
-	}
-}
-
-/// From String
-impl FromStr for AsmFormat {
-	type Err = Error;
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		match s.to_lowercase().as_str() {
-			"ca65" => Ok(AsmFormat::Ca65),
-			"basic" => Ok(AsmFormat::Basic),
-			other => Err(ErrorKind::UnknownAsmFormat(other.to_owned()).into()),
-		}
-	}
-}
-
-/// Trait for object that outputs its data to an assembled format
-pub trait Assemblable {
-	/// Assemble to particular format
-	fn assemble(&self, format: &AsmFormat, line_start: &mut usize) -> Result<String, Error>;
-}

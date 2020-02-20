@@ -13,7 +13,7 @@
 // limitations under the License.
 
 //! Wrapper for an Imageset Representing a Sprite
-use crate::{AsmFormat, Assemblable};
+use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
 use crate::{VeraImageSet, VeraPixelDepth};
 use std::fmt;
@@ -105,7 +105,12 @@ impl<'a> VeraBitmap<'a> {
 }
 
 impl<'a> Assemblable for VeraBitmap<'a> {
-	fn assemble(&self, out_format: &AsmFormat, line_start: &mut usize) -> Result<String, Error> {
+	fn id(&self) -> &str {
+		&self.id
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
+		let mut retval = AssembledPrimitive::new();
 		if self.imageset.is_none() {
 			return Err(ErrorKind::BitmapNoImageSet(format!("{}", self.id)).into());
 		}
@@ -113,21 +118,15 @@ impl<'a> Assemblable for VeraBitmap<'a> {
 		if imageset.frame_data.is_empty() {
 			return Err(ErrorKind::ImageSetEmpty(self.id.clone()).into());
 		}
-		let mut retval = match out_format {
-			AsmFormat::Ca65 => format!("\n;{} - Width is {}", self.id, self.width.val_as_u32()),
-			AsmFormat::Basic => {
-				format!("\n{} REM WIDTH IS {}", line_start, self.width.val_as_u32())
-			}
-		};
-		*line_start += 1;
+		retval.add_meta(format!(
+			"{} - Width is {}",
+			self.id,
+			self.width.val_as_u32()
+		));
 		let pal_offset = imageset.frame_data[0].pal_offset;
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!("\n;Palette offset is {}", pal_offset),
-			AsmFormat::Basic => format!("\n{} REM PALETTE OFFSET IS {}", line_start, pal_offset),
-		};
-		retval += "\n";
-		*line_start += 1;
-		retval += &imageset.assemble(out_format, line_start)?;
+		retval.add_meta(format!("Palette offset is {}", pal_offset));
+		let imageset_asm = imageset.assemble()?;
+		retval.add_prim(imageset_asm);
 		Ok(retval)
 	}
 }

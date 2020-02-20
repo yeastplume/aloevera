@@ -65,9 +65,12 @@ fn tilemap_32_x_32_x_16_8bpp() -> Result<(), Error> {
 	tilemap.load_from_png(mapdata.to_vec(), None, 0, 0, 0)?;
 
 	println!("{}", tilemap);
-	let mut line_start = 10000;
-	let asm = tilemap.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = tilemap.assemble()?;
+	println!("palette: {}", palette);
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	Ok(())
 }
@@ -110,9 +113,11 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 	tilemap.load_from_png(mapdata.to_vec(), Some(&palette), 1, 1, 0)?;
 	println!("{}", tilemap);
 
-	let mut line_start = 10000;
-	let asm = tilemap.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = tilemap.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	// Init tilemap again for 1BPP 256 mode
 	let mut tilemap = VeraTileMap::init_from_imageset(
@@ -128,8 +133,11 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 	println!("{}", tilemap);
 
 	// and output in format 1
-	let asm = tilemap.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = tilemap.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	Ok(())
 }
@@ -172,9 +180,11 @@ fn tilemap_128_x_32_x_16_4bpp() -> Result<(), Error> {
 	tilemap.load_from_png(mapdata.to_vec(), None, 0, 10, 0)?;
 
 	println!("{}", tilemap);
-	let mut line_start = 10000;
-	let asm = tilemap.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = tilemap.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	Ok(())
 }

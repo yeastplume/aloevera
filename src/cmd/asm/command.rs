@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::iter::Iterator;
+
 use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
 use vera::{AsmFormat, Assemblable, VeraBitmap, VeraSprite};
@@ -20,6 +22,34 @@ use vera::{AsmFormat, Assemblable, VeraBitmap, VeraSprite};
 pub struct AsmArgs {
 	pub out_dir: String,
 	pub format: AsmFormat,
+}
+
+fn perform_assemble<T>(
+	values: &mut dyn Iterator<Item = &T>,
+	output_format: &AsmFormat,
+	out_dir: &str,
+	line_start: &mut usize,
+) -> Result<(), Error>
+where
+	T: Assemblable,
+{
+	for v in values {
+		let code = v.assemble()?;
+		let asm_meta = code.assemble_meta(output_format.clone())?;
+		let meta_lc = asm_meta.line_count();
+		let asm_data = code.assemble_data(output_format.clone())?;
+		let data_lc = asm_data.line_count();
+		let mut output = asm_meta.to_string(Some(*line_start));
+		output = format!(
+			"{}{}",
+			output,
+			asm_data.to_string(Some(*line_start + meta_lc))
+		);
+		let file_name = format!("{}/{}.{}.inc", out_dir, v.id(), output_format);
+		common::output_to_file(&file_name, &output)?;
+		*line_start += meta_lc + data_lc;
+	}
+	Ok(())
 }
 
 /// Assemble
@@ -32,30 +62,37 @@ pub fn asm(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 	if !proj.palettes.is_empty() {
 		let pal_dir = format!("{}/palettes", args.out_dir);
 		common::create_dir(&pal_dir)?;
-		for p in proj.palettes.values() {
-			let asm = p.assemble(&args.format, &mut line_start)?;
-			common::output_to_file(&format!("{}/{}.{}.inc", pal_dir, p.id, args.format), &asm)?;
-		}
+		perform_assemble(
+			&mut proj.palettes.values(),
+			&args.format,
+			&pal_dir,
+			&mut line_start,
+		)?;
 	}
 	if !proj.imagesets.is_empty() {
 		let img_dir = format!("{}/imagesets", args.out_dir);
 		common::create_dir(&img_dir)?;
-		for i in proj.imagesets.values() {
-			let asm = i.assemble(&args.format, &mut line_start)?;
-			common::output_to_file(&format!("{}/{}.{}.inc", img_dir, i.id, args.format), &asm)?;
-		}
+		perform_assemble(
+			&mut proj.imagesets.values(),
+			&args.format,
+			&img_dir,
+			&mut line_start,
+		)?;
 	}
 	if !proj.tilemaps.is_empty() {
 		let tm_dir = format!("{}/tilemaps", args.out_dir);
 		common::create_dir(&tm_dir)?;
-		for i in proj.tilemaps.values() {
-			let asm = i.assemble(&args.format, &mut line_start)?;
-			common::output_to_file(&format!("{}/{}.{}.inc", tm_dir, i.id, args.format), &asm)?;
-		}
+		perform_assemble(
+			&mut proj.tilemaps.values(),
+			&args.format,
+			&tm_dir,
+			&mut line_start,
+		)?;
 	}
+	let mut sprites = vec![];
 	if !proj.sprites.is_empty() {
-		let tm_dir = format!("{}/sprites", args.out_dir);
-		common::create_dir(&tm_dir)?;
+		let sp_dir = format!("{}/sprites", args.out_dir);
+		common::create_dir(&sp_dir)?;
 		for s in proj.sprites.values() {
 			//Repopulate references
 			let imageset = match proj.imagesets.get(&s.imageset_id) {
@@ -69,13 +106,14 @@ pub fn asm(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 				}
 			};
 			let sprite = VeraSprite::init_from_imageset(&s.id, &imageset)?;
-			let asm = sprite.assemble(&args.format, &mut line_start)?;
-			common::output_to_file(&format!("{}/{}.{}.inc", tm_dir, s.id, args.format), &asm)?;
+			sprites.push(sprite);
 		}
+		perform_assemble(&mut sprites.iter(), &args.format, &sp_dir, &mut line_start)?;
 	}
+	let mut bitmaps = vec![];
 	if !proj.bitmaps.is_empty() {
-		let tm_dir = format!("{}/bitmaps", args.out_dir);
-		common::create_dir(&tm_dir)?;
+		let bm_dir = format!("{}/bitmaps", args.out_dir);
+		common::create_dir(&bm_dir)?;
 		for b in proj.bitmaps.values() {
 			//Repopulate references
 			let imageset = match proj.imagesets.get(&b.imageset_id) {
@@ -89,9 +127,9 @@ pub fn asm(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 				}
 			};
 			let bitmap = VeraBitmap::init_from_imageset(&b.id, &imageset)?;
-			let asm = bitmap.assemble(&args.format, &mut line_start)?;
-			common::output_to_file(&format!("{}/{}.{}.inc", tm_dir, b.id, args.format), &asm)?;
+			bitmaps.push(bitmap);
 		}
+		perform_assemble(&mut bitmaps.iter(), &args.format, &bm_dir, &mut line_start)?;
 	}
 
 	Ok(())

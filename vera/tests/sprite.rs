@@ -39,12 +39,19 @@ fn sprite_load_4bpp() -> Result<(), Error> {
 	// Now init sprite, which is just a bounds check, really
 	let sprite = VeraSprite::init_from_imageset("sprite", &set)?;
 
-	let mut line_start = 10000;
-	let asm = sprite.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = sprite.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
-	let asm = sprite.assemble(&AsmFormat::Basic, &mut line_start)?;
-	println!("{}", asm);
+	// assemble BASIC
+	let line_start = 1000;
+	let asm = code.assemble_meta(crate::AsmFormat::Basic)?;
+	let len_to_add = asm.line_count();
+	println!("{}", asm.to_string(Some(line_start)));
+	let asm = code.assemble_data(crate::AsmFormat::Basic)?;
+	println!("{}", asm.to_string(Some(line_start + len_to_add)));
 
 	Ok(())
 }

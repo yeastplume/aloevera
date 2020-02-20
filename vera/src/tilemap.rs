@@ -15,7 +15,7 @@
 //! Vera tilemap definitions
 
 use crate::png_to_frames;
-use crate::{AsmFormat, Assemblable};
+use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
 use crate::{VeraImageSet, VeraPalette, VeraPixelDepth};
 
@@ -98,7 +98,12 @@ impl VeraTileMapEntry {
 }
 
 impl Assemblable for VeraTileMapEntry {
-	fn assemble(&self, out_format: &AsmFormat, _line_start: &mut usize) -> Result<String, Error> {
+	fn id(&self) -> &str {
+		"0"
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
+		let mut retval = AssembledPrimitive::new();
 		let out_bytes = match self {
 			VeraTileMapEntry::Text0(index, foreground, background) => {
 				let mut byte_1: u8 = background << 4;
@@ -114,10 +119,8 @@ impl Assemblable for VeraTileMapEntry {
 				(byte0, byte1)
 			}
 		};
-		match out_format {
-			AsmFormat::Ca65 => Ok(format!("${:02X},${:02X}", out_bytes.0, out_bytes.1)),
-			AsmFormat::Basic => Ok(format!("{},{}", out_bytes.0, out_bytes.1)),
-		}
+		retval.add_data(&[out_bytes.0, out_bytes.1]);
+		Ok(retval)
 	}
 }
 
@@ -464,62 +467,31 @@ impl VeraTileMap {
 }
 
 impl Assemblable for VeraTileMap {
-	fn assemble(&self, out_format: &AsmFormat, line_start: &mut usize) -> Result<String, Error> {
+	fn id(&self) -> &str {
+		&self.id
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		if self.tiles.is_empty() {
 			warn!("tilemap is empty: {}", self.id);
 		}
-		let mut retval = match out_format {
-			AsmFormat::Ca65 => format!("\n;{} size is {}", self.id, self.size()),
-			AsmFormat::Basic => format!("\n{} REM SIZE IS {}", line_start, self.size()),
-		};
-		retval += "\n";
-		*line_start += 1;
-
+		let mut retval = AssembledPrimitive::new();
 		// load instructions
 		let (start_index, stride, skip) = self.calc_start_index_stride_and_skip();
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!(";Start write into map_data addr + ${:02X}", start_index),
-			AsmFormat::Basic => format!(
-				"{} REM START WRITE INTO MAP DATA ADDR + ${:02X}",
-				line_start, start_index
-			),
-		};
-		retval += "\n";
-		*line_start += 1;
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!(";read {} to write addr", stride),
-			AsmFormat::Basic => format!("{} REM READ {} TO WRITE ADDR", line_start, stride),
-		};
-		retval += "\n";
-		*line_start += 1;
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!(";skip {} write positions", skip),
-			AsmFormat::Basic => format!("{} REM SKIP {} WRITE POSITIONS", line_start, skip),
-		};
-		retval += "\n";
-		*line_start += 1;
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!(";until {} bytes written", self.size()),
-			AsmFormat::Basic => format!("{} REM UNTIL {} BYTES WRITTEN", line_start, self.size()),
-		};
-		retval += "\n";
-		*line_start += 1;
+		retval.add_meta(format!("{} size is {}", self.id, self.size()));
+		retval.add_meta(format!(
+			"Start write into map_data addr + ${:02X}",
+			start_index
+		));
+		retval.add_meta(format!("read {} to write addr", stride));
+		retval.add_meta(format!("skip {} write positions", skip));
+		retval.add_meta(format!("until {} bytes written", self.size()));
+		retval.add_meta(format!("until {} bytes written", self.size()));
 
-		let mut out_lines = 0;
-		for (i, e) in self.tiles.iter().enumerate() {
-			let line_prefix = match out_format {
-				AsmFormat::Ca65 => ".byte ".to_owned(),
-				AsmFormat::Basic => format!("{} DATA ", *line_start + i / 4),
-			};
-			if i % 4 == 0 {
-				retval += &format!("\n{}", line_prefix);
-				out_lines += 1;
-			} else {
-				retval += ","
-			}
-			retval += &e.assemble(out_format, line_start)?;
+		for e in self.tiles.iter() {
+			let entry_asm = e.assemble()?;
+			retval.add_prim(entry_asm);
 		}
-		*line_start += out_lines;
 		Ok(retval)
 	}
 }

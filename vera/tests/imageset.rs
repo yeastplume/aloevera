@@ -237,25 +237,33 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 
 	// BPP1 ignores palette
 	set.format_indices(&palette, VeraPixelDepth::BPP1)?;
-	let mut line_start = 10000;
 
 	// assemble 8 BPP
 	set.format_indices(&palette, VeraPixelDepth::BPP8)?;
 	println!("{}", set);
-	let asm = set.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = set.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	// assemble 4 BPP
 	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
 	println!("{}", set);
-	let asm = set.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = set.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	// assemble 2 BPP
 	set.format_indices(&palette, VeraPixelDepth::BPP2)?;
 	println!("{}", set);
-	let asm = set.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = set.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
 	Ok(())
 }
@@ -286,14 +294,21 @@ fn imageset_text_8_x_8_1bpp() -> Result<(), Error> {
 	println!("{}", frame);
 	assert_eq!(frame.pal_offset, 0);
 	assert_eq!(frame.pixel_at_coord(3, 1)?.is_on, true);
-	let mut line_start = 10000;
 
 	println!("depth: {:?}", set.depth);
-	let asm = set.assemble(&AsmFormat::Ca65, &mut line_start)?;
-	println!("{}", asm);
+	let code = set.assemble()?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
+	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	println!("{}", asm.to_string(None));
 
-	let asm = set.assemble(&AsmFormat::Basic, &mut line_start)?;
-	println!("{}", asm);
+	// assemble BASIC
+	let line_start = 1000;
+	let asm = code.assemble_meta(crate::AsmFormat::Basic)?;
+	let len_to_add = asm.line_count();
+	println!("{}", asm.to_string(Some(line_start)));
+	let asm = code.assemble_data(crate::AsmFormat::Basic)?;
+	println!("{}", asm.to_string(Some(line_start + len_to_add)));
 
 	Ok(())
 }

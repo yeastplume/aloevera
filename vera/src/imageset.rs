@@ -27,7 +27,7 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 
 use crate::png_to_frames;
-use crate::{AsmFormat, Assemblable};
+use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
 use crate::{VeraPalette, VeraPaletteEntry};
 
@@ -499,16 +499,16 @@ impl fmt::Display for VeraImageSet {
 }
 
 impl Assemblable for VeraImageSet {
-	fn assemble(&self, out_format: &AsmFormat, line_start: &mut usize) -> Result<String, Error> {
+	fn id(&self) -> &str {
+		&self.id
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		if !self.formatted {
 			return Err(ErrorKind::ImageSetNotFormatted(format!("{}", self.id)).into());
 		}
-		let mut retval = match out_format {
-			AsmFormat::Ca65 => format!("\n;{} - size is {}", self.id, self.size()),
-			AsmFormat::Basic => format!("\n{} REM SIZE IS {}", line_start, self.size()),
-		};
-		retval += "\n";
-		*line_start += 1;
+		let mut retval = AssembledPrimitive::new();
+		retval.add_meta(format!("{} - size is {}", self.id, self.size()));
 		let depth = match self.depth {
 			Some(d) => d,
 			None => {
@@ -518,7 +518,6 @@ impl Assemblable for VeraImageSet {
 		let mut out_count = 0;
 		let mut cur_out_byte = 0u8;
 		let mut cur_val_count = 0;
-		let mut out_lines = 0;
 		for frame in self.frame_data.iter() {
 			for pixel in frame.data.iter() {
 				let pal_index = match pixel.pal_index {
@@ -568,20 +567,7 @@ impl Assemblable for VeraImageSet {
 					cur_val_count += 1;
 				}
 				if cur_val_count == 8 / depth as usize {
-					let line_prefix = match out_format {
-						AsmFormat::Ca65 => ".byte ".to_owned(),
-						AsmFormat::Basic => format!("{} DATA ", *line_start + out_count / 8),
-					};
-					if out_count % 8 == 0 {
-						retval += &format!("\n{}", line_prefix);
-						out_lines += 1;
-					} else {
-						retval += ","
-					}
-					match out_format {
-						AsmFormat::Ca65 => retval += &format!("${:02X}", cur_out_byte),
-						AsmFormat::Basic => retval += &format!("{}", cur_out_byte),
-					}
+					retval.add_data(&[cur_out_byte]);
 					cur_out_byte = 0u8;
 					cur_val_count = 0;
 					out_count += 1;
@@ -591,7 +577,6 @@ impl Assemblable for VeraImageSet {
 		if out_count != self.size() {
 			return Err(ErrorKind::ImageSizeMismatch(out_count, self.size()).into());
 		}
-		*line_start += out_lines;
 		Ok(retval)
 	}
 }

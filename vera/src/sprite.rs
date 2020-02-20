@@ -13,7 +13,7 @@
 // limitations under the License.
 
 //! Wrapper for an Imageset Representing a Sprite
-use crate::{AsmFormat, Assemblable};
+use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
 use crate::{VeraImageSet, VeraPixelDepth};
 use std::fmt;
@@ -118,7 +118,12 @@ impl<'a> VeraSprite<'a> {
 }
 
 impl<'a> Assemblable for VeraSprite<'a> {
-	fn assemble(&self, out_format: &AsmFormat, line_start: &mut usize) -> Result<String, Error> {
+	fn id(&self) -> &str {
+		&self.id
+	}
+
+	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
+		let mut retval = AssembledPrimitive::new();
 		if self.imageset.is_none() {
 			return Err(ErrorKind::SpriteNoImageSet(format!("{}", self.id)).into());
 		}
@@ -126,43 +131,20 @@ impl<'a> Assemblable for VeraSprite<'a> {
 		if imageset.frame_data.is_empty() {
 			return Err(ErrorKind::ImageSetEmpty(self.id.clone()).into());
 		}
-		let mut retval = match out_format {
-			AsmFormat::Ca65 => format!("\n;{} - Total size is {}", self.id, imageset.size()),
-			AsmFormat::Basic => format!("\n{} REM SIZE IS {}", line_start, imageset.size()),
-		};
-		*line_start += 1;
+		retval.add_meta(format!("{} - Total size is {}", self.id, imageset.size()));
 		let frame_size = imageset.frame_data[0].size();
-		retval += &match out_format {
-			AsmFormat::Ca65 => format!("\n;{} - Frame size is ${:X}", self.id, frame_size),
-			AsmFormat::Basic => format!(
-				"\n{} REM FRAME SIZE IS ${:X}",
-				line_start,
-				imageset.frame_data[0].size()
-			),
-		};
-		*line_start += 1;
+		retval.add_meta(format!("{} - Frame size is ${:X}", self.id, frame_size));
+
 		for (i, f) in imageset.frame_data.iter().enumerate() {
-			retval += &match out_format {
-				AsmFormat::Ca65 => format!("\n;Frame {} starts at addr + ${:X}", i, frame_size * i),
-				AsmFormat::Basic => format!(
-					"\n{} REM FRAME {} STARTS AT ADDR + ${:X}",
-					line_start,
-					i,
-					frame_size * i
-				),
-			};
-			*line_start += 1;
-			retval += &match out_format {
-				AsmFormat::Ca65 => format!("\n;Frame {} pal offset - {}", i, f.pal_offset),
-				AsmFormat::Basic => format!(
-					"\n{} REM FRAME {} PAL OFFSET - {}",
-					line_start, i, f.pal_offset,
-				),
-			};
-			*line_start += 1;
+			retval.add_meta(format!(
+				"Frame {} starts at addr + ${:X}",
+				i,
+				frame_size * i
+			));
+			retval.add_meta(format!("Frame {} pal offset - {}", i, f.pal_offset));
 		}
-		retval += "\n";
-		retval += &imageset.assemble(out_format, line_start)?;
+		let imageset_asm = imageset.assemble()?;
+		retval.add_prim(imageset_asm);
 		Ok(retval)
 	}
 }
