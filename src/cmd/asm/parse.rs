@@ -28,9 +28,14 @@ pub fn parse_asm_args(g_args: &GlobalArgs, args: &ArgMatches) -> Result<AsmArgs,
 	}
 	let out_dir = common::parse_required(args, "out_dir")?;
 	let asm_format = common::parse_required(args, "format")?;
+	let sd_image = match args.value_of("sd_image") {
+		Some(s) => Some(s.into()),
+		None => None,
+	};
 	Ok(AsmArgs {
 		out_dir: out_dir.into(),
 		format: AsmFormat::from_str(asm_format)?,
+		sd_image,
 	})
 }
 

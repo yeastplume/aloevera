@@ -33,4 +33,4 @@ run_bas: $(NAME).assembled.bas
 
 all: OBJS_$(NAME)
 clean:
-	rm -rf ./output *.o *.prg *.map *.av *.log *.assembled.bas
+	rm -rf ./output *.o *.prg *.map *.av *.log *.assembled.bas *.img

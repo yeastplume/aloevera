@@ -44,7 +44,7 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 	let proj_json = common::read_file_string(&project_file)?;
 	let mut proj = AloeVeraProject::new_from_json(&proj_json)?;
 	proj.palettes.insert(palette.id.clone(), palette);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes())?;
+	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
 
 	Ok(())
 }

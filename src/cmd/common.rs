@@ -15,6 +15,7 @@
 use crate::{Error, ErrorKind};
 use std::fs::{self, File};
 use std::io::{Read, Write};
+use util::fat;
 
 use proj::AloeVeraProject;
 
@@ -81,9 +82,16 @@ pub fn parse_global_args(args: &ArgMatches) -> Result<GlobalArgs, Error> {
 	})
 }
 
-pub fn output_to_file(path: &str, data: &[u8]) -> Result<(), Error> {
-	let mut file = File::create(&path)?;
-	file.write_all(data)?;
+pub fn output_to_file(path: &str, data: &[u8], sd_image: &Option<String>) -> Result<(), Error> {
+	match sd_image {
+		None => {
+			let mut file = File::create(&path)?;
+			file.write_all(data)?;
+		}
+		Some(i) => {
+			fat::write_file_to_image(i, path, data)?;
+		}
+	}
 	Ok(())
 }
 

@@ -37,7 +37,7 @@ pub fn execute_create_command(args: &ArgMatches) -> Result<(), Error> {
 			let a = arg_parse!(parse_create_project_args(args));
 			command::create_project(&a)
 		}
-		("sdimage", Some(args)) => {
+		("sd_image", Some(args)) => {
 			let a = arg_parse!(parse_create_sd_image_args(args));
 			command::create_sd_image(&a)
 		}

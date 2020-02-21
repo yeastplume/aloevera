@@ -12,7 +12,8 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av sprite init terra_sprite terra_imageset
 	$(ALOEVERA) -p project.av asm ./output/ all
 	$(ALOEVERA) -p project.av asm -f basic ./output/ all
-	$(ALOEVERA) -p project.av asm -f bin ./output/ all
+#	$(ALOEVERA) create sd_image terra.img
+#	$(ALOEVERA) -p project.av asm -f bin ./output/ -s terra.img all
 
 generate_resources: project.av
 

@@ -22,6 +22,7 @@ use vera::{AsmFormat, Assemblable, VeraBitmap, VeraSprite};
 pub struct AsmArgs {
 	pub out_dir: String,
 	pub format: AsmFormat,
+	pub sd_image: Option<String>,
 }
 
 fn perform_assemble<T>(
@@ -29,6 +30,7 @@ fn perform_assemble<T>(
 	output_format: &AsmFormat,
 	out_dir: &str,
 	line_start: &mut usize,
+	sd_image: &Option<String>,
 ) -> Result<(), Error>
 where
 	T: Assemblable,
@@ -39,7 +41,7 @@ where
 		let meta_lc = asm_meta.line_count();
 		let (output, ext) = if *output_format == AsmFormat::Bin {
 			let file_name = format!("{}/{}.bin", out_dir, v.id());
-			common::output_to_file(&file_name, &code.data)?;
+			common::output_to_file(&file_name, &code.data, sd_image)?;
 			(asm_meta.to_string(None)?, "meta")
 		} else {
 			let asm_data = code.assemble_data(output_format.clone())?;
@@ -54,7 +56,7 @@ where
 			(res, "inc")
 		};
 		let file_name = format!("{}/{}.{}.{}", out_dir, v.id(), output_format, ext);
-		common::output_to_file(&file_name, output.as_bytes())?;
+		common::output_to_file(&file_name, output.as_bytes(), sd_image)?;
 	}
 	Ok(())
 }
@@ -74,6 +76,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&args.format,
 			&pal_dir,
 			&mut line_start,
+			&args.sd_image,
 		)?;
 	}
 	if !proj.imagesets.is_empty() {
@@ -84,6 +87,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&args.format,
 			&img_dir,
 			&mut line_start,
+			&args.sd_image,
 		)?;
 	}
 	if !proj.tilemaps.is_empty() {
@@ -94,6 +98,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&args.format,
 			&tm_dir,
 			&mut line_start,
+			&args.sd_image,
 		)?;
 	}
 	let mut sprites = vec![];
@@ -115,7 +120,13 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			let sprite = VeraSprite::init_from_imageset(&s.id, &imageset)?;
 			sprites.push(sprite);
 		}
-		perform_assemble(&mut sprites.iter(), &args.format, &sp_dir, &mut line_start)?;
+		perform_assemble(
+			&mut sprites.iter(),
+			&args.format,
+			&sp_dir,
+			&mut line_start,
+			&args.sd_image,
+		)?;
 	}
 	let mut bitmaps = vec![];
 	if !proj.bitmaps.is_empty() {
@@ -136,7 +147,13 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			let bitmap = VeraBitmap::init_from_imageset(&b.id, &imageset)?;
 			bitmaps.push(bitmap);
 		}
-		perform_assemble(&mut bitmaps.iter(), &args.format, &bm_dir, &mut line_start)?;
+		perform_assemble(
+			&mut bitmaps.iter(),
+			&args.format,
+			&bm_dir,
+			&mut line_start,
+			&args.sd_image,
+		)?;
 	}
 
 	Ok(())

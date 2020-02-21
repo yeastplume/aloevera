@@ -115,7 +115,7 @@ $WRITE
 
 mkpartition() {
   fallocate -l ${SIZE}M "$PARTITION"
-  mkfs.fat -F32 -S"$LOGICAL_SECTOR_SIZE" "$PARTITION" >/dev/null
+  mkfs.fat -F32 -S"$LOGICAL_SECTOR_SIZE" -n "ALOEVERA" "$PARTITION" >/dev/null
 }
 
 copyfiles() {

@@ -48,7 +48,7 @@ pub fn bitmap_init(g_args: &GlobalArgs, args: &BitmapInitArgs) -> Result<(), Err
 	};
 	let bitmap = VeraBitmap::init_from_imageset(&args.id, &imageset)?;
 	proj.bitmaps.insert(args.id.clone(), bitmap);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes())?;
+	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
 
 	Ok(())
 }

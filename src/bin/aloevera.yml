@@ -23,7 +23,7 @@ subcommands:
               - output_file:
                   help: Output file name
                   index: 1
-        - sdimage:
+        - sd_image:
             about: Create a new FAT32 SDCard Image in which to insert assembled binary assets
             args:
               - output_file:
@@ -46,6 +46,8 @@ subcommands:
             takes_value: true
         - sd_image:
             help: If provided, output assets into the given FAT32 Image file instead of the local filesystem
+            short: s
+            takes_value: true
      subcommands:
         - all: Export all assets in the project file
   - palette:

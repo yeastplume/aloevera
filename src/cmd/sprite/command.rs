@@ -48,7 +48,7 @@ pub fn sprite_init(g_args: &GlobalArgs, args: &SpriteInitArgs) -> Result<(), Err
 	};
 	let sprite = VeraSprite::init_from_imageset(&args.id, &imageset)?;
 	proj.sprites.insert(args.id.clone(), sprite);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes())?;
+	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
 
 	Ok(())
 }
