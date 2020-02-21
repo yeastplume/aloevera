@@ -233,7 +233,7 @@ impl AssembledPrimitive {
 						.into());
 					}
 				};
-				if j < 7 && index < self.data.len() - 1 {
+				if (j < 7 || out_format == AsmFormat::Cc65) && index < self.data.len() - 1 {
 					curval += ",";
 				}
 			}

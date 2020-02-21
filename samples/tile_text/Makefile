@@ -13,6 +13,7 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av tilemap load -p palette_tilemap -x 1 -y 10 -c 6 tilemap_1 tilemap-banner-1bpp.png
 	$(ALOEVERA) -p project.av asm ./output/ all
 	$(ALOEVERA) -p project.av asm -f basic ./output/ all
+#	$(ALOEVERA) -p project.av asm -f cc65 ./output/ all
 
 generate_resources: project.av
 

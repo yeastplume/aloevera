@@ -12,6 +12,7 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av bitmap init kq5_bmp kq5_screen
 	$(ALOEVERA) -p project.av asm ./output/ all
 	$(ALOEVERA) -p project.av asm -f basic ./output/ all
+	#$(ALOEVERA) -p project.av asm -f cc65 ./output/ all
 	#$(ALOEVERA) create sd_image kq5.img
 	#$(ALOEVERA) -p project.av asm -f bin ./output/ select -a 0x2200 kq5_bmp kq5_bmp.bin
 
