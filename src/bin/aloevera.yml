@@ -10,16 +10,25 @@ args:
       takes_value: true
 subcommands:
   - create:
-      about: Create a new Aloevera project file
-      args:
-        - id:
-            help: Internal Id for the new project file
-            short: i
-            long: id
-            takes_value: true
-        - output_file:
-            help: Output file name
-            index: 1
+      about: Create Aloevera project files or target images
+      subcommands:
+        - project:
+            about: Create a new Aloevera project file
+            args:
+              - id:
+                  help: Internal Id for the new project file
+                  short: i
+                  long: id
+                  takes_value: true
+              - output_file:
+                  help: Output file name
+                  index: 1
+        - sdimage:
+            about: Create a new FAT32 SDCard Image in which to insert assembled binary assets
+            args:
+              - output_file:
+                  help: Output image file name
+                  index: 1
   - asm:
      about: Assembles all resources in the project file
      args:

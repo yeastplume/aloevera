@@ -2,7 +2,7 @@ include ../Makefile.vars
 NAME = scratch
 
 project.av:
-	$(ALOEVERA) create project.av
+	$(ALOEVERA) create project project.av
 #	$(ALOEVERA) -p project.gx16 palette import palette_1 pixel-font.png
 #	$(ALOEVERA) -p project.gx16 imageset import text_set_1 8 8 pixel-font.png
 #	$(ALOEVERA) -p project.gx16 imageset format text_set_1 palette_1 1

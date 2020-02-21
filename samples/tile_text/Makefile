@@ -4,7 +4,7 @@ RESOURCES = pixel-font.png tilemap-banner-1bpp.png
 
 project.av: $(RESOURCES)
 	rm -rf project.gx16 ./output/
-	$(ALOEVERA) create project.av
+	$(ALOEVERA) create project project.av
 	$(ALOEVERA) -p project.av palette import palette_1 pixel-font.png
 	$(ALOEVERA) -p project.av imageset import text_set_1 8 8 pixel-font.png
 	$(ALOEVERA) -p project.av imageset format text_set_1 palette_1 1

@@ -5,7 +5,7 @@ RESOURCES = terra.png
 
 project.av: $(RESOURCES)
 	rm -rf project.av ./output/
-	$(ALOEVERA) create project.av
+	$(ALOEVERA) create project project.av
 	$(ALOEVERA) -p project.av palette import terra_pal terra.png
 	$(ALOEVERA) -p project.av imageset import terra_imageset 16 32 terra.png
 	$(ALOEVERA) -p project.av imageset format terra_imageset terra_pal 4

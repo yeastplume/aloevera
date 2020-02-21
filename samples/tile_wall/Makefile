@@ -4,7 +4,7 @@ RESOURCES = tile_wall-map.png tile_wall-imageset-4bpp.png
 
 project.av: $(RESOURCES)
 	rm -rf project.av ./output/
-	$(ALOEVERA) create project.av
+	$(ALOEVERA) create project project.av
 	$(ALOEVERA) -p project.av palette import tile_wall_pal tile_wall-imageset-4bpp.png
 	$(ALOEVERA) -p project.av imageset import wall_tiles 16 16 tile_wall-imageset-4bpp.png
 	$(ALOEVERA) -p project.av imageset format wall_tiles tile_wall_pal 4

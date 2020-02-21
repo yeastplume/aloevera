@@ -5,7 +5,7 @@ RESOURCES = kq5.png
 
 project.av: $(RESOURCES)
 	rm -rf project.av ./output/
-	$(ALOEVERA) create project.av
+	$(ALOEVERA) create project project.av
 	$(ALOEVERA) -p project.av palette import kq5_pal kq5-halved.png
 	$(ALOEVERA) -p project.av imageset import kq5_screen 320 100 kq5-halved.png
 	$(ALOEVERA) -p project.av imageset format kq5_screen kq5_pal 8

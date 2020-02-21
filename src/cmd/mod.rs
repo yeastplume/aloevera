@@ -16,9 +16,9 @@ pub mod common;
 
 pub mod asm;
 pub mod bitmap;
+pub mod create;
 pub mod imageset;
 pub mod palette;
-pub mod project;
 pub mod sprite;
 pub mod tilemap;
 

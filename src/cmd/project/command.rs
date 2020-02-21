@@ -34,3 +34,21 @@ pub fn create_project(args: &CreateProjectArgs) -> Result<(), Error> {
 
 	Ok(())
 }
+
+/// Arguments for the initial create project command
+pub struct CreateSDImageArgs {
+	pub output_file: String,
+}
+
+pub fn create_sd_image(args: &CreateSDImageArgs) -> Result<(), Error> {
+	info!(
+		"Creating new SDCard (FAT32 FS) image at: {}",
+		args.output_file
+	);
+
+	/*let proj = AloeVeraProject::new(id);
+	let json = proj.to_json()?;*/
+	//crate::cmd::common::output_to_file(&args.output_file, &json.as_bytes())?;
+
+	Ok(())
+}
