@@ -11,8 +11,8 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av tilemap init tilemap_1 text_set_1 128 64 text_16
 	$(ALOEVERA) -p project.av palette import palette_tilemap tilemap-banner-1bpp.png
 	$(ALOEVERA) -p project.av tilemap load -p palette_tilemap -x 1 -y 10 -c 6 tilemap_1 tilemap-banner-1bpp.png
-	$(ALOEVERA) -p project.av asm ./output/
-	$(ALOEVERA) -p project.av asm -f basic ./output/
+	$(ALOEVERA) -p project.av asm ./output/ all
+	$(ALOEVERA) -p project.av asm -f basic ./output/ all
 
 generate_resources: project.av
 

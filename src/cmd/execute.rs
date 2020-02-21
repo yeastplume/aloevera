@@ -20,11 +20,8 @@ use crate::{Error, ErrorKind};
 
 fn parse_and_execute(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
 	match args.subcommand() {
-		("asm", Some(args)) => {
-			let a = arg_parse!(asm::parse::parse_asm_args(g_args, &args,));
-			asm::command::asm(g_args, &a)
-		}
 		("create", Some(args)) => create::parse::execute_create_command(&args),
+		("asm", Some(args)) => asm::parse::execute_asm_command(g_args, &args),
 		("palette", Some(args)) => palette::parse::execute_palette_command(g_args, &args),
 		("sprite", Some(args)) => sprite::parse::execute_sprite_command(g_args, &args),
 		("bitmap", Some(args)) => bitmap::parse::execute_bitmap_command(g_args, &args),

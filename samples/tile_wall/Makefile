@@ -10,8 +10,8 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av imageset format wall_tiles tile_wall_pal 4
 	$(ALOEVERA) -p project.av tilemap init wall_tilemap wall_tiles 64 32 tile_4bpp
 	$(ALOEVERA) -p project.av tilemap load -x 0 -y 10 wall_tilemap tile_wall-map.png
-	$(ALOEVERA) -p project.av asm ./output/
-	$(ALOEVERA) -p project.av asm -f basic ./output/
+	$(ALOEVERA) -p project.av asm ./output/ all
+	$(ALOEVERA) -p project.av asm -f basic ./output/ all
 
 generate_resources: project.av
 

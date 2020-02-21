@@ -60,7 +60,7 @@ where
 }
 
 /// Assemble
-pub fn asm(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
+pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 	let proj = common::load_project(g_args.project_file.clone())?;
 	// Todo: make this a flag?
 	//common::remove_dir(&args.out_dir)?;

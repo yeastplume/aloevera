@@ -10,8 +10,8 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av imageset import kq5_screen 320 100 kq5-halved.png
 	$(ALOEVERA) -p project.av imageset format kq5_screen kq5_pal 8
 	$(ALOEVERA) -p project.av bitmap init kq5_bmp kq5_screen
-	$(ALOEVERA) -p project.av asm ./output/
-	$(ALOEVERA) -p project.av asm -f basic ./output/
+	$(ALOEVERA) -p project.av asm ./output/ all
+	$(ALOEVERA) -p project.av asm -f basic ./output/ all
 
 generate_resources: project.av
 

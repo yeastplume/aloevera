@@ -44,6 +44,10 @@ subcommands:
               - bin
             default_value: ca65
             takes_value: true
+        - sd_image:
+            help: If provided, output assets into the given FAT32 Image file instead of the local filesystem
+     subcommands:
+        - all: Export all assets in the project file
   - palette:
       about: Import and manipulate palette files
       subcommands:

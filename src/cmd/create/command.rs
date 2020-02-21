@@ -14,6 +14,7 @@
 
 use crate::Error;
 use proj::{AloeVeraProject, Jsonable};
+use util::fat;
 
 /// Arguments for the initial create project command
 pub struct CreateProjectArgs {
@@ -46,9 +47,7 @@ pub fn create_sd_image(args: &CreateSDImageArgs) -> Result<(), Error> {
 		args.output_file
 	);
 
-	/*let proj = AloeVeraProject::new(id);
-	let json = proj.to_json()?;*/
-	//crate::cmd::common::output_to_file(&args.output_file, &json.as_bytes())?;
+	fat::create_fat_image(&args.output_file)?;
 
 	Ok(())
 }

@@ -15,7 +15,7 @@ use std::str::FromStr;
 
 use clap::ArgMatches;
 
-use super::command::AsmArgs;
+use super::command::{self, AsmArgs};
 use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
 
@@ -32,4 +32,17 @@ pub fn parse_asm_args(g_args: &GlobalArgs, args: &ArgMatches) -> Result<AsmArgs,
 		out_dir: out_dir.into(),
 		format: AsmFormat::from_str(asm_format)?,
 	})
+}
+
+pub fn execute_asm_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
+	match args.subcommand() {
+		("all", Some(_a)) => {
+			let a = arg_parse!(parse_asm_args(g_args, args));
+			command::asm_all(g_args, &a)
+		}
+		_ => {
+			let msg = format!("Unknown sub command, use 'aloevera asm --help' for details");
+			return Err(ErrorKind::ArgumentError(msg).into());
+		}
+	}
 }

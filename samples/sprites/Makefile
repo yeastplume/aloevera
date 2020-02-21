@@ -10,9 +10,9 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av imageset import terra_imageset 16 32 terra.png
 	$(ALOEVERA) -p project.av imageset format terra_imageset terra_pal 4
 	$(ALOEVERA) -p project.av sprite init terra_sprite terra_imageset
-	$(ALOEVERA) -p project.av asm ./output/
-	$(ALOEVERA) -p project.av asm -f basic ./output/
-	$(ALOEVERA) -p project.av asm -f bin ./output/
+	$(ALOEVERA) -p project.av asm ./output/ all
+	$(ALOEVERA) -p project.av asm -f basic ./output/ all
+	$(ALOEVERA) -p project.av asm -f bin ./output/ all
 
 generate_resources: project.av
 
