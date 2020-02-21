@@ -33,7 +33,7 @@ subcommands:
      about: Assembles all resources in the project file
      args:
         - out_dir:
-            help: directory into which to place exported assembly
+            help: directory into which to place exported assembly. If using the `select` command, `out_file` will be added to this
             index: 1
         - format:
             help: Assembly export format
@@ -49,7 +49,17 @@ subcommands:
             short: s
             takes_value: true
      subcommands:
-        - all: Export all assets in the project file
+        - all:
+            about: Export all assets in the project file
+        - select:
+            about: Select an asset ID to output and its target locatiom
+            args:
+              - asset_id:
+                  help: The ID of the asset to output
+                  index: 1
+              - out_file:
+                  help: Output asset location
+                  index: 2
   - palette:
       about: Import and manipulate palette files
       subcommands:

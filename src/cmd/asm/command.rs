@@ -18,7 +18,7 @@ use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
 use vera::{AsmFormat, Assemblable, VeraBitmap, VeraSprite};
 
-/// Arguments for asm command
+/// Arguments for asm commands
 pub struct AsmArgs {
 	pub out_dir: String,
 	pub format: AsmFormat,
@@ -29,6 +29,7 @@ fn perform_assemble<T>(
 	values: &mut dyn Iterator<Item = &T>,
 	output_format: &AsmFormat,
 	out_dir: &str,
+	file_name: Option<&str>,
 	line_start: &mut usize,
 	sd_image: &Option<String>,
 ) -> Result<(), Error>
@@ -40,8 +41,11 @@ where
 		let asm_meta = code.assemble_meta(output_format.clone())?;
 		let meta_lc = asm_meta.line_count();
 		let (output, ext) = if *output_format == AsmFormat::Bin {
-			let file_name = format!("{}/{}.bin", out_dir, v.id());
-			common::output_to_file(&file_name, &code.data, sd_image)?;
+			let file_name = match file_name {
+				Some(f) => f.into(),
+				None => format!("{}/{}.bin", out_dir, v.id()),
+			};
+			common::output_to_file(&file_name, &code.data_as_bin(None), sd_image)?;
 			(asm_meta.to_string(None)?, "meta")
 		} else {
 			let asm_data = code.assemble_data(output_format.clone())?;
@@ -55,7 +59,10 @@ where
 			*line_start += meta_lc + data_lc;
 			(res, "inc")
 		};
-		let file_name = format!("{}/{}.{}.{}", out_dir, v.id(), output_format, ext);
+		let file_name = match file_name {
+			Some(f) => format!("{}.meta", f),
+			None => format!("{}/{}.{}.{}", out_dir, v.id(), output_format, ext),
+		};
 		common::output_to_file(&file_name, output.as_bytes(), sd_image)?;
 	}
 	Ok(())
@@ -75,6 +82,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&mut proj.palettes.values(),
 			&args.format,
 			&pal_dir,
+			None,
 			&mut line_start,
 			&args.sd_image,
 		)?;
@@ -86,6 +94,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&mut proj.imagesets.values(),
 			&args.format,
 			&img_dir,
+			None,
 			&mut line_start,
 			&args.sd_image,
 		)?;
@@ -97,6 +106,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&mut proj.tilemaps.values(),
 			&args.format,
 			&tm_dir,
+			None,
 			&mut line_start,
 			&args.sd_image,
 		)?;
@@ -124,6 +134,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&mut sprites.iter(),
 			&args.format,
 			&sp_dir,
+			None,
 			&mut line_start,
 			&args.sd_image,
 		)?;
@@ -151,10 +162,111 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			&mut bitmaps.iter(),
 			&args.format,
 			&bm_dir,
+			None,
 			&mut line_start,
 			&args.sd_image,
 		)?;
 	}
 
 	Ok(())
+}
+
+/// Arguments for asm commands
+pub struct AsmSelectArgs {
+	pub asset_id: String,
+	pub out_file: String,
+}
+
+pub fn asm_select(
+	g_args: &GlobalArgs,
+	asm_args: &AsmArgs,
+	args: &AsmSelectArgs,
+) -> Result<(), Error> {
+	let proj = common::load_project(g_args.project_file.clone())?;
+	let mut line_start = 10000;
+	// now look for the ID
+	if proj.palettes.contains_key(&args.asset_id) {
+		perform_assemble(
+			&mut proj.palettes.values().filter(|v| v.id == args.asset_id),
+			&asm_args.format,
+			".",
+			Some(&args.out_file),
+			&mut line_start,
+			&asm_args.sd_image,
+		)?;
+		return Ok(());
+	}
+	if proj.imagesets.contains_key(&args.asset_id) {
+		perform_assemble(
+			&mut proj.imagesets.values().filter(|v| v.id == args.asset_id),
+			&asm_args.format,
+			".",
+			Some(&args.out_file),
+			&mut line_start,
+			&asm_args.sd_image,
+		)?;
+		return Ok(());
+	}
+	if proj.tilemaps.contains_key(&args.asset_id) {
+		perform_assemble(
+			&mut proj.tilemaps.values().filter(|v| v.id == args.asset_id),
+			&asm_args.format,
+			".",
+			Some(&args.out_file),
+			&mut line_start,
+			&asm_args.sd_image,
+		)?;
+		return Ok(());
+	}
+	if proj.sprites.contains_key(&args.asset_id) {
+		let sprite = proj.sprites.get(&args.asset_id).unwrap();
+		let imageset = match proj.imagesets.get(&sprite.imageset_id) {
+			Some(i) => i,
+			None => {
+				let msg = format!(
+					"Imageset with id {} needed by sprite {} does not exist in project file.",
+					sprite.id, sprite.imageset_id
+				);
+				return Err(ErrorKind::ArgumentError(msg).into());
+			}
+		};
+		let sprite = VeraSprite::init_from_imageset(&sprite.id, &imageset)?;
+		perform_assemble(
+			&mut [sprite].to_vec().iter(),
+			&asm_args.format,
+			".",
+			Some(&args.out_file),
+			&mut line_start,
+			&asm_args.sd_image,
+		)?;
+		return Ok(());
+	}
+	if proj.bitmaps.contains_key(&args.asset_id) {
+		let bitmap = proj.bitmaps.get(&args.asset_id).unwrap();
+		let imageset = match proj.imagesets.get(&bitmap.imageset_id) {
+			Some(i) => i,
+			None => {
+				let msg = format!(
+					"Imageset with id {} needed by bitmap {} does not exist in project file.",
+					bitmap.id, bitmap.imageset_id
+				);
+				return Err(ErrorKind::ArgumentError(msg).into());
+			}
+		};
+		let bitmap = VeraBitmap::init_from_imageset(&bitmap.id, &imageset)?;
+		perform_assemble(
+			&mut [bitmap].to_vec().iter(),
+			&asm_args.format,
+			".",
+			Some(&args.out_file),
+			&mut line_start,
+			&asm_args.sd_image,
+		)?;
+		return Ok(());
+	}
+	let msg = format!(
+		"Asset with id {} does not exist in project file.",
+		args.asset_id,
+	);
+	Err(ErrorKind::ArgumentError(msg).into())
 }

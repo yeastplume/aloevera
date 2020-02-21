@@ -15,7 +15,7 @@ use std::str::FromStr;
 
 use clap::ArgMatches;
 
-use super::command::{self, AsmArgs};
+use super::command::{self, AsmArgs, AsmSelectArgs};
 use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
 
@@ -39,11 +39,30 @@ pub fn parse_asm_args(g_args: &GlobalArgs, args: &ArgMatches) -> Result<AsmArgs,
 	})
 }
 
+pub fn parse_asm_select_args(
+	asm_args: &AsmArgs,
+	args: &ArgMatches,
+) -> Result<AsmSelectArgs, Error> {
+	let asset_id = common::parse_required(args, "asset_id")?;
+	let out_file = common::parse_required(args, "out_file")?;
+	Ok(AsmSelectArgs {
+		asset_id: asset_id.into(),
+		out_file: format!(
+			"{}{}{}",
+			asm_args.out_dir,
+			std::path::MAIN_SEPARATOR,
+			out_file
+		),
+	})
+}
+
 pub fn execute_asm_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
+	let a = arg_parse!(parse_asm_args(g_args, args));
 	match args.subcommand() {
-		("all", Some(_a)) => {
-			let a = arg_parse!(parse_asm_args(g_args, args));
-			command::asm_all(g_args, &a)
+		("all", Some(_)) => command::asm_all(g_args, &a),
+		("select", Some(args)) => {
+			let s = parse_asm_select_args(&a, &args)?;
+			command::asm_select(g_args, &a, &s)
 		}
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera asm --help' for details");

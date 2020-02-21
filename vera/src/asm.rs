@@ -119,7 +119,7 @@ pub struct AssembledPrimitive {
 	/// to load
 	meta: Vec<String>,
 	/// Assembled raw binary data
-	pub data: Vec<u8>,
+	data: Vec<u8>,
 }
 
 impl AssembledPrimitive {
@@ -147,6 +147,22 @@ impl AssembledPrimitive {
 		for b in new_data {
 			self.data.push(*b);
 		}
+	}
+
+	/// retrieve bin data formatted as bin data
+	pub fn data_as_bin(&self, address_bytes: Option<[u8; 2]>) -> Vec<u8> {
+		//TODO: Some other method that doesn't involve cloning data
+		let mut address_bytes = match address_bytes {
+			Some(b) => b.to_vec(),
+			None => [0, 0].to_vec(),
+		};
+		address_bytes.append(&mut self.data.clone());
+		address_bytes
+	}
+
+	/// retrieve the raw bin data
+	pub fn data_raw(&self) -> &Vec<u8> {
+		&self.data
 	}
 
 	/// Output Meta, formatted for assembly target
