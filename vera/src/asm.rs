@@ -284,7 +284,7 @@ fn test_assemble() -> Result<(), Error> {
 	println!("{}", data_str);
 
 	assert!(data_str.starts_with(".byte $10,"));
-	assert!(data_str.ends_with(".byte $10,$10"));
+	assert!(data_str.ends_with(".byte $10,$10\n"));
 
 	Ok(())
 }
