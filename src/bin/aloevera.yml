@@ -61,6 +61,12 @@ subcommands:
               - out_file:
                   help: Output asset location
                   index: 2
+              - bin_address:
+                  help: When outputting .bin files, the 16-bit load address to use as the header (e.g 0xbaba, baba)
+                  long: bin_address
+                  short: a
+                  takes_value: true
+                  default_value: "0x0000"
   - palette:
       about: Import and manipulate palette files
       subcommands:

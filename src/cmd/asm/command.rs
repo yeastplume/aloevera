@@ -32,6 +32,7 @@ fn perform_assemble<T>(
 	file_name: Option<&str>,
 	line_start: &mut usize,
 	sd_image: &Option<String>,
+	bin_address: Option<[u8; 2]>,
 ) -> Result<(), Error>
 where
 	T: Assemblable,
@@ -45,7 +46,7 @@ where
 				Some(f) => f.into(),
 				None => format!("{}/{}.bin", out_dir, v.id()),
 			};
-			common::output_to_file(&file_name, &code.data_as_bin(None), sd_image)?;
+			common::output_to_file(&file_name, &code.data_as_bin(bin_address), sd_image)?;
 			(asm_meta.to_string(None)?, "meta")
 		} else {
 			let asm_data = code.assemble_data(output_format.clone())?;
@@ -89,6 +90,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			None,
 			&mut line_start,
 			&args.sd_image,
+			None,
 		)?;
 	}
 	if !proj.imagesets.is_empty() {
@@ -101,6 +103,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			None,
 			&mut line_start,
 			&args.sd_image,
+			None,
 		)?;
 	}
 	if !proj.tilemaps.is_empty() {
@@ -113,6 +116,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			None,
 			&mut line_start,
 			&args.sd_image,
+			None,
 		)?;
 	}
 	let mut sprites = vec![];
@@ -141,6 +145,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			None,
 			&mut line_start,
 			&args.sd_image,
+			None,
 		)?;
 	}
 	let mut bitmaps = vec![];
@@ -169,6 +174,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			None,
 			&mut line_start,
 			&args.sd_image,
+			None,
 		)?;
 	}
 
@@ -179,6 +185,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 pub struct AsmSelectArgs {
 	pub asset_id: String,
 	pub out_file: String,
+	pub bin_address: [u8; 2],
 }
 
 pub fn asm_select(
@@ -197,6 +204,7 @@ pub fn asm_select(
 			Some(&args.out_file),
 			&mut line_start,
 			&asm_args.sd_image,
+			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -208,6 +216,7 @@ pub fn asm_select(
 			Some(&args.out_file),
 			&mut line_start,
 			&asm_args.sd_image,
+			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -219,6 +228,7 @@ pub fn asm_select(
 			Some(&args.out_file),
 			&mut line_start,
 			&asm_args.sd_image,
+			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -242,6 +252,7 @@ pub fn asm_select(
 			Some(&args.out_file),
 			&mut line_start,
 			&asm_args.sd_image,
+			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -265,6 +276,7 @@ pub fn asm_select(
 			Some(&args.out_file),
 			&mut line_start,
 			&asm_args.sd_image,
+			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}

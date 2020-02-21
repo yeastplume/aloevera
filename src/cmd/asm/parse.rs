@@ -17,6 +17,7 @@ use clap::ArgMatches;
 
 use super::command::{self, AsmArgs, AsmSelectArgs};
 use crate::cmd::common::{self, GlobalArgs};
+use crate::util;
 use crate::{Error, ErrorKind};
 
 use vera::AsmFormat;
@@ -45,6 +46,23 @@ pub fn parse_asm_select_args(
 ) -> Result<AsmSelectArgs, Error> {
 	let asset_id = common::parse_required(args, "asset_id")?;
 	let out_file = common::parse_required(args, "out_file")?;
+
+	let mut bin_address = common::parse_required(args, "bin_address")?
+		.to_owned()
+		.to_uppercase();
+	if bin_address.starts_with("0X") {
+		bin_address = bin_address.split_off(2);
+	};
+	let bin_address_vec = util::hex::from_hex(bin_address)?;
+	if bin_address_vec.len() != 2 {
+		let msg = format!(".bin start address must be 16 bytes (4 hex digits)");
+		return Err(ErrorKind::ArgumentError(msg).into());
+	}
+	let mut bin_address = [0, 0];
+	for i in 0..2 {
+		bin_address[i] = bin_address_vec[i];
+	}
+
 	Ok(AsmSelectArgs {
 		asset_id: asset_id.into(),
 		out_file: format!(
@@ -53,6 +71,7 @@ pub fn parse_asm_select_args(
 			std::path::MAIN_SEPARATOR,
 			out_file
 		),
+		bin_address,
 	})
 }
 
