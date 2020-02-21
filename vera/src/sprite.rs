@@ -123,7 +123,7 @@ impl<'a> Assemblable for VeraSprite<'a> {
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		if self.imageset.is_none() {
 			return Err(ErrorKind::SpriteNoImageSet(format!("{}", self.id)).into());
 		}

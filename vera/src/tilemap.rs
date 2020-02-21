@@ -103,7 +103,7 @@ impl Assemblable for VeraTileMapEntry {
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		let out_bytes = match self {
 			VeraTileMapEntry::Text0(index, foreground, background) => {
 				let mut byte_1: u8 = background << 4;
@@ -475,7 +475,7 @@ impl Assemblable for VeraTileMap {
 		if self.tiles.is_empty() {
 			warn!("tilemap is empty: {}", self.id);
 		}
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		// load instructions
 		let (start_index, stride, skip) = self.calc_start_index_stride_and_skip();
 		retval.add_meta(format!("{} size is {}", self.id, self.size()));

@@ -110,7 +110,7 @@ impl<'a> Assemblable for VeraBitmap<'a> {
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		if self.imageset.is_none() {
 			return Err(ErrorKind::BitmapNoImageSet(format!("{}", self.id)).into());
 		}

@@ -57,7 +57,11 @@ where
 				asm_data.to_string(Some(*line_start + meta_lc))?
 			);
 			*line_start += meta_lc + data_lc;
-			(res, "inc")
+			let mut ext = "inc";
+			if *output_format == AsmFormat::Cc65 {
+				ext = "h"
+			}
+			(res, ext)
 		};
 		let file_name = match file_name {
 			Some(f) => format!("{}.meta", f),

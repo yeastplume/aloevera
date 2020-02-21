@@ -292,7 +292,7 @@ impl Assemblable for VeraPalette {
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		retval.add_meta(format!("{} - size is {}", self.id, self.size()));
 		for e in self.entries.iter() {
 			let mut off_0 = e.g << 4;

@@ -36,6 +36,8 @@ pub enum AsmFormat {
 	Basic,
 	/// ca65 assembly
 	Ca65,
+	/// cc65-friendly header file
+	Cc65,
 	/// Raw Binary file
 	Bin,
 }
@@ -45,6 +47,7 @@ impl fmt::Display for AsmFormat {
 		let out = match self {
 			AsmFormat::Basic => "basic",
 			AsmFormat::Ca65 => "ca65",
+			AsmFormat::Cc65 => "cc65",
 			AsmFormat::Bin => "bin",
 		};
 		write!(f, "{}", out)
@@ -58,6 +61,7 @@ impl FromStr for AsmFormat {
 		match s.to_lowercase().as_str() {
 			"ca65" => Ok(AsmFormat::Ca65),
 			"basic" => Ok(AsmFormat::Basic),
+			"cc65" => Ok(AsmFormat::Cc65),
 			"bin" => Ok(AsmFormat::Bin),
 			other => Err(ErrorKind::UnknownAsmFormat(other.to_owned()).into()),
 		}
@@ -97,6 +101,7 @@ impl AssembledString {
 		for (i, l) in self.assembled_data.iter().enumerate() {
 			retval += &match self.target_format {
 				AsmFormat::Ca65 => format!("{}\n", l),
+				AsmFormat::Cc65 => format!("{}\n", l),
 				AsmFormat::Basic => format!("{} {}\n", line_start + i, l),
 				// only metadata should get to this stage
 				AsmFormat::Bin => format!("{}\n", l),
@@ -120,12 +125,15 @@ pub struct AssembledPrimitive {
 	meta: Vec<String>,
 	/// Assembled raw binary data
 	data: Vec<u8>,
+	/// Id, needed by some types of output
+	id: String,
 }
 
 impl AssembledPrimitive {
 	/// New blank assembly
-	pub fn new() -> Self {
+	pub fn new(id: &str) -> Self {
 		Self {
+			id: id.to_owned(),
 			meta: vec![],
 			data: vec![],
 		}
@@ -168,12 +176,19 @@ impl AssembledPrimitive {
 	/// Output Meta, formatted for assembly target
 	pub fn assemble_meta(&self, out_format: AsmFormat) -> Result<AssembledString, Error> {
 		let mut retval = AssembledString::new(&out_format);
+		if out_format == AsmFormat::Cc65 {
+			retval.add(format!("/**"));
+		}
 		for m in self.meta.iter() {
 			retval.add(match out_format {
 				AsmFormat::Ca65 => format!(";{}", m),
 				AsmFormat::Basic => format!("REM {}", m.to_uppercase()),
+				AsmFormat::Cc65 => format!(" * {}", m),
 				AsmFormat::Bin => format!(";{}", m),
 			});
+		}
+		if out_format == AsmFormat::Cc65 {
+			retval.add(format!(" */"));
 		}
 		Ok(retval)
 	}
@@ -181,11 +196,20 @@ impl AssembledPrimitive {
 	/// Output data, formatted for assembly target
 	pub fn assemble_data(&self, out_format: AsmFormat) -> Result<AssembledString, Error> {
 		let mut retval = AssembledString::new(&out_format);
+		if out_format == AsmFormat::Cc65 {
+			retval.add(format!("#ifndef {}_H", self.id.to_uppercase()));
+			retval.add(format!("#define {}_H", self.id.to_uppercase()));
+			retval.add(format!(
+				"static const unsigned char {}[] = {{",
+				self.id.to_uppercase()
+			));
+		}
 		for i in (0..self.data.len()).step_by(8) {
 			let mut curval = String::from("");
 			curval += &match out_format {
 				AsmFormat::Ca65 => format!(".byte "),
 				AsmFormat::Basic => format!("DATA "),
+				AsmFormat::Cc65 => format!("    "),
 				AsmFormat::Bin => {
 					return Err(ErrorKind::InvalidAsmFormat(
 						"Attempt to format binary data as string".into(),
@@ -201,6 +225,7 @@ impl AssembledPrimitive {
 				curval += &match out_format {
 					AsmFormat::Ca65 => format!("${:02X}", self.data[index]),
 					AsmFormat::Basic => format!("{}", self.data[index]),
+					AsmFormat::Cc65 => format!("0x{:02x}", self.data[index]),
 					AsmFormat::Bin => {
 						return Err(ErrorKind::InvalidAsmFormat(
 							"Attempt to format binary data as string".into(),
@@ -214,13 +239,17 @@ impl AssembledPrimitive {
 			}
 			retval.add(curval);
 		}
+		if out_format == AsmFormat::Cc65 {
+			retval.add(format!("}};"));
+			retval.add(format!("#endif"));
+		}
 		Ok(retval)
 	}
 }
 
 #[test]
 fn test_assemble() -> Result<(), Error> {
-	let mut prim = AssembledPrimitive::new();
+	let mut prim = AssembledPrimitive::new("my_prim");
 	prim.add_meta("here is some metadata 1".to_owned());
 	prim.add_meta("here is some metadata 2".to_owned());
 	prim.add_meta("here is some metadata 4".to_owned());
@@ -255,7 +284,7 @@ fn test_assemble() -> Result<(), Error> {
 	println!("{}", data_str);
 
 	assert!(data_str.starts_with(".byte $10,"));
-	assert!(data_str.ends_with(".byte $10,$10\n"));
+	assert!(data_str.ends_with(".byte $10,$10"));
 
 	Ok(())
 }

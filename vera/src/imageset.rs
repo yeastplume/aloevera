@@ -507,7 +507,7 @@ impl Assemblable for VeraImageSet {
 		if !self.formatted {
 			return Err(ErrorKind::ImageSetNotFormatted(format!("{}", self.id)).into());
 		}
-		let mut retval = AssembledPrimitive::new();
+		let mut retval = AssembledPrimitive::new(self.id());
 		retval.add_meta(format!("{} - size is {}", self.id, self.size()));
 		let depth = match self.depth {
 			Some(d) => d,
