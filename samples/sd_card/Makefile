@@ -12,11 +12,17 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av bitmap init kq5_bmp kq5_screen
 	$(ALOEVERA) create sd_image kq5.img
 	$(ALOEVERA) -p project.av asm -s kq5.img -f bin . select -a 0x0000 kq5_bmp KQ5.BIN
-	$(ALOEVERA) -p project.av asm -f bin . select -a 0x0000 kq5_bmp KQ5.BIN
 	$(ALOEVERA) -p project.av asm -s kq5.img -f bin . select -a 0x0000 kq5_pal KQ5PAL.BIN
+	$(ALOEVERA) -p project.av asm -f bin . select -a 0x0000 kq5_bmp KQ5.BIN
+	$(ALOEVERA) -p project.av asm -f bin . select -a 0x0000 kq5_pal KQ5PAL.BIN
 
 generate_resources: project.av
 
-SD_CARD = -sdcard kq5.img
+#SD_CARD = -sdcard kq5.img
+
+generate_basic: generate_resources
+	cat $(NAME).bas > $(NAME).assembled.bas
+
+$(NAME).assembled.bas: generate_basic
 
 include ../common/Makefile

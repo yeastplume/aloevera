@@ -165,12 +165,12 @@ pub struct AsmSelectArgs {
 
 pub fn asm_select(
 	g_args: &GlobalArgs,
-	mut asm_args: AsmArgs,
+	asm_args: AsmArgs,
 	args: &AsmSelectArgs,
 ) -> Result<(), Error> {
 	let proj = common::load_project(g_args.project_file.clone())?;
 	let mut line_start = 10000;
-	asm_args.out_dir = ".".into();
+	common::create_dir(&asm_args.out_dir)?;
 	// now look for the ID
 	if proj.palettes.contains_key(&args.asset_id) {
 		perform_assemble(
