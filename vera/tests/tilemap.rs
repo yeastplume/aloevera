@@ -139,6 +139,10 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
+	// Conflated
+	let _asm = code.assemble_data(crate::AsmFormat::Ca65, true)?;
+	//println!("{}", asm.to_string(None)?);
+
 	Ok(())
 }
 

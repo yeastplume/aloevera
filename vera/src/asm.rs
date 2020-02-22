@@ -124,11 +124,13 @@ impl AssembledString {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ConflateInfo {
 	/// start offset from start of vera tilemap
-	start_offset: u32,
+	start_offset: usize,
 	/// number of tiles to draw per row
-	stride: u32,
+	stride: usize,
 	/// number of tiles to skip per row
-	skip: u32,
+	skip: usize,
+	/// Total vera tilemap length, in bytes
+	tilemap_length: usize,
 }
 
 /// Holds raw assembled data, pre-formatting
@@ -158,11 +160,18 @@ impl AssembledPrimitive {
 	}
 
 	/// set Tilemap values
-	pub fn set_tilemap_conflate_info(&mut self, start_offset: u32, stride: u32, skip: u32) {
+	pub fn set_tilemap_conflate_info(
+		&mut self,
+		start_offset: u32,
+		stride: u32,
+		skip: u32,
+		tilemap_length: u32,
+	) {
 		self.conflate_info = Some(ConflateInfo {
-			start_offset,
-			stride,
-			skip,
+			start_offset: start_offset as usize,
+			stride: stride as usize,
+			skip: skip as usize,
+			tilemap_length: tilemap_length as usize,
 		});
 	}
 
@@ -208,9 +217,28 @@ impl AssembledPrimitive {
 		&self.data
 	}
 
-	/// Conflate raw data in-place
-	pub fn conflate_data(&self) -> Result<Vec<u8>, Error> {
-		Ok(self.data.clone())
+	/// Conflate raw data
+	fn conflate_data(&self) -> Result<Vec<u8>, Error> {
+		let c_data = match self.conflate_info.clone() {
+			Some(c) => c,
+			None => {
+				return Err(ErrorKind::InvalidAsmFormat("Missing Conflate Data".into()).into());
+			}
+		};
+		// Add zeroes up to start index
+		let mut ret_data = vec![0u8; c_data.start_offset];
+		for i in (0..self.data.len()).step_by(c_data.stride) {
+			let mut slice_vec = vec![0; c_data.stride];
+			slice_vec.copy_from_slice(&self.data[i..i + c_data.stride]);
+			ret_data.append(&mut slice_vec);
+			for _ in 0..c_data.skip {
+				ret_data.push(0);
+			}
+		}
+		for _ in 0..(c_data.tilemap_length - ret_data.len()) {
+			ret_data.push(0);
+		}
+		Ok(ret_data)
 	}
 
 	/// Output Meta, formatted for assembly target

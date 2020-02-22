@@ -12,6 +12,7 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av tilemap load -x 0 -y 10 wall_tilemap tile_wall-map.png
 	$(ALOEVERA) -p project.av asm ./output/ all
 	$(ALOEVERA) -p project.av asm -f basic ./output/ all
+	$(ALOEVERA) -p project.av asm -f bin ./output/ all
 
 generate_resources: project.av
 
