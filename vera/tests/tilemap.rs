@@ -67,7 +67,7 @@ fn tilemap_32_x_32_x_16_8bpp() -> Result<(), Error> {
 	println!("{}", tilemap);
 	let code = tilemap.assemble()?;
 	println!("palette: {}", palette);
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -114,7 +114,7 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 	println!("{}", tilemap);
 
 	let code = tilemap.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -134,7 +134,7 @@ fn tilemap_text_8_x_8() -> Result<(), Error> {
 
 	// and output in format 1
 	let code = tilemap.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -185,7 +185,7 @@ fn tilemap_128_x_32_x_16_4bpp() -> Result<(), Error> {
 
 	println!("{}", tilemap);
 	let code = tilemap.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);

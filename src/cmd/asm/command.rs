@@ -37,7 +37,8 @@ where
 {
 	for v in values {
 		let code = v.assemble()?;
-		let asm_meta = code.assemble_meta(asm_args.format.clone())?;
+		let conflate = asm_args.format == AsmFormat::Bin || asm_args.conflate_tilemaps;
+		let asm_meta = code.assemble_meta(asm_args.format.clone(), conflate)?;
 		let meta_lc = asm_meta.line_count();
 		let (output, ext) = if asm_args.format == AsmFormat::Bin {
 			let (file_name, bin_address) = match sel_args.clone() {
@@ -67,16 +68,20 @@ where
 			}
 			(res, ext)
 		};
-		let file_name = match sel_args.clone() {
-			Some(s) => format!("{}.meta", s.out_file),
-			None => format!(
-				"{}/{}.{}.{}",
-				asm_args.out_dir,
-				v.id(),
-				asm_args.format,
-				ext
-			),
-		};
+		let mut file_name = format!(
+			"{}/{}.{}.{}",
+			asm_args.out_dir,
+			v.id(),
+			asm_args.format,
+			ext
+		);
+		if let Some(s) = sel_args.clone() {
+			if asm_args.format == AsmFormat::Bin {
+				file_name = format!("{}.meta", s.out_file);
+			} else {
+				file_name = s.out_file.clone();
+			}
+		}
 		common::output_to_file(&file_name, output.as_bytes(), &asm_args.sd_image)?;
 	}
 	Ok(())

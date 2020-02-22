@@ -104,12 +104,28 @@ jmp start
 		rts
 .endproc
 
+.proc load_tilemap_conflated
+	v_address_set $10000, 1
+	set_const_16 $00, tilemap_conflated
+
+	TARGET = 4096 ;loop until size reached
+
+	loop:
+		lda ($00),y
+		sta VERA_DATA0
+		add_constant_16 $00, 1
+		loop_till_eq_16 $00, (tilemap_conflated + TARGET), loop
+	rts
+.endproc
+
 start:
 	jsr set_mode
 	jsr load_palette
 	jsr load_imageset
 	jsr clear_map
 	jsr load_tilemap
+	;Alternatively, comment in below for the conflated straight-load version
+	;jsr load_tilemap_conflated
 	;turn off layer 2 to see our handiwork
 	v_address_set $F3000, 0
 	lda #$0 ;default, off
@@ -123,3 +139,5 @@ imageset:
 	.include "output/imagesets/wall_tiles.ca65.inc"
 tilemap:
 	.include "output/tilemaps/wall_tilemap.ca65.inc"
+tilemap_conflated:
+	.include "output/tilemaps/wall_tilemap.ca65.conflated.inc"

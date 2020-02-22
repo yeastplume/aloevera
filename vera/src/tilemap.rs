@@ -479,7 +479,14 @@ impl Assemblable for VeraTileMap {
 		// load instructions
 		let (start_index, stride, skip) = self.calc_start_index_stride_and_skip();
 		let length = self.map_width.val_as_u32() * self.map_height.val_as_u32() * 2;
-		retval.set_tilemap_conflate_info(start_index, stride, skip, length);
+		let mut conflated_meta = vec![];
+		conflated_meta.push(format!("{} - size is {}", self.id, length));
+		conflated_meta.push(format!(
+			"{}x{} 2 byte Tilemap entries",
+			self.map_width.val_as_u32(),
+			self.map_height.val_as_u32()
+		));
+		retval.set_tilemap_conflate_info(start_index, stride, skip, length, conflated_meta);
 		retval.add_meta(format!("{} size is {}", self.id, self.size()));
 		retval.add_meta(format!(
 			"Start write into map_data addr + ${:02X}",

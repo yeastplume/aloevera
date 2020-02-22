@@ -131,6 +131,8 @@ pub struct ConflateInfo {
 	skip: usize,
 	/// Total vera tilemap length, in bytes
 	tilemap_length: usize,
+	/// Differing Meta
+	conflated_meta: Vec<String>,
 }
 
 /// Holds raw assembled data, pre-formatting
@@ -166,12 +168,14 @@ impl AssembledPrimitive {
 		stride: u32,
 		skip: u32,
 		tilemap_length: u32,
+		conflated_meta: Vec<String>,
 	) {
 		self.conflate_info = Some(ConflateInfo {
 			start_offset: start_offset as usize,
 			stride: stride as usize,
 			skip: skip as usize,
 			tilemap_length: tilemap_length as usize,
+			conflated_meta,
 		});
 	}
 
@@ -242,12 +246,22 @@ impl AssembledPrimitive {
 	}
 
 	/// Output Meta, formatted for assembly target
-	pub fn assemble_meta(&self, out_format: AsmFormat) -> Result<AssembledString, Error> {
+	pub fn assemble_meta(
+		&self,
+		out_format: AsmFormat,
+		conflate: bool,
+	) -> Result<AssembledString, Error> {
 		let mut retval = AssembledString::new(&out_format);
+		let mut meta = &self.meta;
+		let conf_meta;
+		if self.conflate_info.is_some() && conflate {
+			conf_meta = self.conflate_info.as_ref().unwrap().conflated_meta.clone();
+			meta = &conf_meta;
+		}
 		if out_format == AsmFormat::Cc65 {
 			retval.add(format!("/**"));
 		}
-		for m in self.meta.iter() {
+		for m in meta.iter() {
 			retval.add(match out_format {
 				AsmFormat::Ca65 => format!(";{}", m),
 				AsmFormat::Basic => format!("REM {}", m.to_uppercase()),
@@ -334,7 +348,7 @@ fn test_assemble() -> Result<(), Error> {
 	prim.add_data(&[16u8; 34]);
 
 	let mut line_count = 1;
-	let meta_strs = prim.assemble_meta(AsmFormat::Basic)?;
+	let meta_strs = prim.assemble_meta(AsmFormat::Basic, false)?;
 	let num_lines = meta_strs.line_count();
 	let meta_str = meta_strs.to_string(Some(line_count))?;
 	line_count += num_lines;
@@ -349,7 +363,7 @@ fn test_assemble() -> Result<(), Error> {
 	println!("{}", data_str);
 	assert!(data_str.ends_with("8 DATA 16,16\n"));
 
-	let meta_strs = prim.assemble_meta(AsmFormat::Ca65)?;
+	let meta_strs = prim.assemble_meta(AsmFormat::Ca65, false)?;
 	let meta_str = meta_strs.to_string(None)?;
 
 	let data_strs = prim.assemble_data(AsmFormat::Ca65, false)?;

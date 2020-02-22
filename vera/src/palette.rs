@@ -370,7 +370,7 @@ mod test {
 		let palette = VeraPalette::default();
 		let code = palette.assemble()?;
 		println!("palette: {}", palette);
-		let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+		let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 		println!("{}", asm.to_string(None)?);
 		let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 		println!("{}", asm.to_string(None)?);

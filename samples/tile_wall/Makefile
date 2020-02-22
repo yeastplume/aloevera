@@ -12,7 +12,10 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av tilemap load -x 0 -y 10 wall_tilemap tile_wall-map.png
 	$(ALOEVERA) -p project.av asm ./output/ all
 	$(ALOEVERA) -p project.av asm -f basic ./output/ all
-	$(ALOEVERA) -p project.av asm -f bin ./output/ all
+	# Output tilemap again, but conflated
+	$(ALOEVERA) -p project.av asm ./output/tilemaps -c select wall_tilemap wall_tilemap.ca65.conflated.inc
+	$(ALOEVERA) -p project.av asm -f bin ./output/tilemaps -c select wall_tilemap wall_tilemap.ca65.conflated.bin
+	$(ALOEVERA) -p project.av asm -f cc65 ./output/tilemaps -c select wall_tilemap wall_tilemap.cc65.conflated.bin
 
 generate_resources: project.av
 

@@ -242,7 +242,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	set.format_indices(&palette, VeraPixelDepth::BPP8)?;
 	println!("{}", set);
 	let code = set.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -251,7 +251,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
 	println!("{}", set);
 	let code = set.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -260,7 +260,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	set.format_indices(&palette, VeraPixelDepth::BPP2)?;
 	println!("{}", set);
 	let code = set.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
@@ -297,14 +297,14 @@ fn imageset_text_8_x_8_1bpp() -> Result<(), Error> {
 
 	println!("depth: {:?}", set.depth);
 	let code = set.assemble()?;
-	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	// assemble BASIC
 	let line_start = 1000;
-	let asm = code.assemble_meta(crate::AsmFormat::Basic)?;
+	let asm = code.assemble_meta(crate::AsmFormat::Basic, false)?;
 	let len_to_add = asm.line_count();
 	println!("{}", asm.to_string(Some(line_start))?);
 	let asm = code.assemble_data(crate::AsmFormat::Basic, false)?;
