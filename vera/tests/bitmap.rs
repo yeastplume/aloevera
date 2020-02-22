@@ -42,7 +42,7 @@ fn bitmap_load_8bpp() -> Result<(), Error> {
 	let code = sprite.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
 	println!("{}", asm.to_string(None)?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	// assemble BASIC
@@ -50,7 +50,7 @@ fn bitmap_load_8bpp() -> Result<(), Error> {
 	let asm = code.assemble_meta(crate::AsmFormat::Basic)?;
 	let len_to_add = asm.line_count();
 	println!("{}", asm.to_string(Some(line_start))?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(Some(line_start + len_to_add))?);
 
 	Ok(())

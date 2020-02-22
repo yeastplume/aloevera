@@ -49,6 +49,10 @@ subcommands:
             help: If provided, output assets into the given FAT32 Image file instead of the local filesystem
             short: s
             takes_value: true
+        - conflate_tilemaps:
+            help: Fill tilemaps with 0 values so they match target VERA Tilemap dimensions (Always true when outputting as bin)
+            short: c
+            takes_value: false
      subcommands:
         - all:
             about: Export all assets in the project file

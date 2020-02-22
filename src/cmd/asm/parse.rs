@@ -33,10 +33,12 @@ pub fn parse_asm_args(g_args: &GlobalArgs, args: &ArgMatches) -> Result<AsmArgs,
 		Some(s) => Some(s.into()),
 		None => None,
 	};
+	let conflate_tilemaps = args.is_present("conflate_tilemaps");
 	Ok(AsmArgs {
 		out_dir: out_dir.into(),
 		format: AsmFormat::from_str(asm_format)?,
 		sd_image,
+		conflate_tilemaps,
 	})
 }
 
@@ -78,10 +80,10 @@ pub fn parse_asm_select_args(
 pub fn execute_asm_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
 	let a = arg_parse!(parse_asm_args(g_args, args));
 	match args.subcommand() {
-		("all", Some(_)) => command::asm_all(g_args, &a),
+		("all", Some(_)) => command::asm_all(g_args, a),
 		("select", Some(args)) => {
 			let s = parse_asm_select_args(&a, &args)?;
-			command::asm_select(g_args, &a, &s)
+			command::asm_select(g_args, a, &s)
 		}
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera asm --help' for details");

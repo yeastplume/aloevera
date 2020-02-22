@@ -478,6 +478,7 @@ impl Assemblable for VeraTileMap {
 		let mut retval = AssembledPrimitive::new(self.id());
 		// load instructions
 		let (start_index, stride, skip) = self.calc_start_index_stride_and_skip();
+		retval.set_tilemap_conflate_info(start_index, stride, skip);
 		retval.add_meta(format!("{} size is {}", self.id, self.size()));
 		retval.add_meta(format!(
 			"Start write into map_data addr + ${:02X}",
@@ -485,8 +486,7 @@ impl Assemblable for VeraTileMap {
 		));
 		retval.add_meta(format!("read {} to write addr", stride));
 		retval.add_meta(format!("skip {} write positions", skip));
-		retval.add_meta(format!("until {} bytes written", self.size()));
-		retval.add_meta(format!("until {} bytes written", self.size()));
+		retval.add_meta(format!("repeat until {} bytes written", self.size()));
 
 		for e in self.tiles.iter() {
 			let entry_asm = e.assemble()?;

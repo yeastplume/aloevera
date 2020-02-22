@@ -244,7 +244,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	let code = set.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
 	println!("{}", asm.to_string(None)?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	// assemble 4 BPP
@@ -253,7 +253,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	let code = set.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
 	println!("{}", asm.to_string(None)?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	// assemble 2 BPP
@@ -262,7 +262,7 @@ fn imageset_indexed_8_2_x_8_2bpp() -> Result<(), Error> {
 	let code = set.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
 	println!("{}", asm.to_string(None)?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	Ok(())
@@ -299,7 +299,7 @@ fn imageset_text_8_x_8_1bpp() -> Result<(), Error> {
 	let code = set.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65)?;
 	println!("{}", asm.to_string(None)?);
-	let asm = code.assemble_data(crate::AsmFormat::Ca65)?;
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 
 	// assemble BASIC
@@ -307,7 +307,7 @@ fn imageset_text_8_x_8_1bpp() -> Result<(), Error> {
 	let asm = code.assemble_meta(crate::AsmFormat::Basic)?;
 	let len_to_add = asm.line_count();
 	println!("{}", asm.to_string(Some(line_start))?);
-	let asm = code.assemble_data(crate::AsmFormat::Basic)?;
+	let asm = code.assemble_data(crate::AsmFormat::Basic, false)?;
 	println!("{}", asm.to_string(Some(line_start + len_to_add))?);
 
 	Ok(())

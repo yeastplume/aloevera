@@ -23,33 +23,36 @@ pub struct AsmArgs {
 	pub out_dir: String,
 	pub format: AsmFormat,
 	pub sd_image: Option<String>,
+	pub conflate_tilemaps: bool,
 }
 
 fn perform_assemble<T>(
 	values: &mut dyn Iterator<Item = &T>,
-	output_format: &AsmFormat,
-	out_dir: &str,
-	file_name: Option<&str>,
+	asm_args: &AsmArgs,
+	sel_args: Option<&AsmSelectArgs>,
 	line_start: &mut usize,
-	sd_image: &Option<String>,
-	bin_address: Option<[u8; 2]>,
 ) -> Result<(), Error>
 where
 	T: Assemblable,
 {
 	for v in values {
 		let code = v.assemble()?;
-		let asm_meta = code.assemble_meta(output_format.clone())?;
+		let asm_meta = code.assemble_meta(asm_args.format.clone())?;
 		let meta_lc = asm_meta.line_count();
-		let (output, ext) = if *output_format == AsmFormat::Bin {
-			let file_name = match file_name {
-				Some(f) => f.into(),
-				None => format!("{}/{}.bin", out_dir, v.id()),
+		let (output, ext) = if asm_args.format == AsmFormat::Bin {
+			let (file_name, bin_address) = match sel_args.clone() {
+				Some(s) => (s.out_file.clone(), s.bin_address.clone()),
+				None => (format!("{}/{}.bin", asm_args.out_dir, v.id()), [0, 0]),
 			};
-			common::output_to_file(&file_name, &code.data_as_bin(bin_address), sd_image)?;
+			common::output_to_file(
+				&file_name,
+				&code.data_as_bin(Some(bin_address), true)?,
+				&asm_args.sd_image,
+			)?;
 			(asm_meta.to_string(None)?, "meta")
 		} else {
-			let asm_data = code.assemble_data(output_format.clone())?;
+			let asm_data =
+				code.assemble_data(asm_args.format.clone(), asm_args.conflate_tilemaps)?;
 			let data_lc = asm_data.line_count();
 			let output = asm_meta.to_string(Some(*line_start))?;
 			let res = format!(
@@ -59,70 +62,53 @@ where
 			);
 			*line_start += meta_lc + data_lc;
 			let mut ext = "inc";
-			if *output_format == AsmFormat::Cc65 {
+			if asm_args.format == AsmFormat::Cc65 {
 				ext = "h"
 			}
 			(res, ext)
 		};
-		let file_name = match file_name {
-			Some(f) => format!("{}.meta", f),
-			None => format!("{}/{}.{}.{}", out_dir, v.id(), output_format, ext),
+		let file_name = match sel_args.clone() {
+			Some(s) => format!("{}.meta", s.out_file),
+			None => format!(
+				"{}/{}.{}.{}",
+				asm_args.out_dir,
+				v.id(),
+				asm_args.format,
+				ext
+			),
 		};
-		common::output_to_file(&file_name, output.as_bytes(), sd_image)?;
+		common::output_to_file(&file_name, output.as_bytes(), &asm_args.sd_image)?;
 	}
 	Ok(())
 }
 
 /// Assemble
-pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
+pub fn asm_all(g_args: &GlobalArgs, mut args: AsmArgs) -> Result<(), Error> {
 	let proj = common::load_project(g_args.project_file.clone())?;
 	// Todo: make this a flag?
 	//common::remove_dir(&args.out_dir)?;
 	let mut line_start = 10000;
+	let start_dir = args.out_dir.clone();
 	// Output palettes
 	if !proj.palettes.is_empty() {
-		let pal_dir = format!("{}/palettes", args.out_dir);
-		common::create_dir(&pal_dir)?;
-		perform_assemble(
-			&mut proj.palettes.values(),
-			&args.format,
-			&pal_dir,
-			None,
-			&mut line_start,
-			&args.sd_image,
-			None,
-		)?;
+		args.out_dir = format!("{}/palettes", start_dir);
+		common::create_dir(&args.out_dir)?;
+		perform_assemble(&mut proj.palettes.values(), &args, None, &mut line_start)?;
 	}
 	if !proj.imagesets.is_empty() {
-		let img_dir = format!("{}/imagesets", args.out_dir);
-		common::create_dir(&img_dir)?;
-		perform_assemble(
-			&mut proj.imagesets.values(),
-			&args.format,
-			&img_dir,
-			None,
-			&mut line_start,
-			&args.sd_image,
-			None,
-		)?;
+		args.out_dir = format!("{}/imagesets", start_dir);
+		common::create_dir(&args.out_dir)?;
+		perform_assemble(&mut proj.imagesets.values(), &args, None, &mut line_start)?;
 	}
 	if !proj.tilemaps.is_empty() {
-		let tm_dir = format!("{}/tilemaps", args.out_dir);
-		common::create_dir(&tm_dir)?;
-		perform_assemble(
-			&mut proj.tilemaps.values(),
-			&args.format,
-			&tm_dir,
-			None,
-			&mut line_start,
-			&args.sd_image,
-			None,
-		)?;
+		args.out_dir = format!("{}/tilemaps", start_dir);
+		common::create_dir(&args.out_dir)?;
+		perform_assemble(&mut proj.tilemaps.values(), &args, None, &mut line_start)?;
 	}
 	let mut sprites = vec![];
 	if !proj.sprites.is_empty() {
-		let sp_dir = format!("{}/sprites", args.out_dir);
-		common::create_dir(&sp_dir)?;
+		args.out_dir = format!("{}/sprites", start_dir);
+		common::create_dir(&args.out_dir)?;
 		for s in proj.sprites.values() {
 			//Repopulate references
 			let imageset = match proj.imagesets.get(&s.imageset_id) {
@@ -138,20 +124,12 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			let sprite = VeraSprite::init_from_imageset(&s.id, &imageset)?;
 			sprites.push(sprite);
 		}
-		perform_assemble(
-			&mut sprites.iter(),
-			&args.format,
-			&sp_dir,
-			None,
-			&mut line_start,
-			&args.sd_image,
-			None,
-		)?;
+		perform_assemble(&mut sprites.iter(), &args, None, &mut line_start)?;
 	}
 	let mut bitmaps = vec![];
 	if !proj.bitmaps.is_empty() {
-		let bm_dir = format!("{}/bitmaps", args.out_dir);
-		common::create_dir(&bm_dir)?;
+		args.out_dir = format!("{}/bitmaps", start_dir);
+		common::create_dir(&args.out_dir)?;
 		for b in proj.bitmaps.values() {
 			//Repopulate references
 			let imageset = match proj.imagesets.get(&b.imageset_id) {
@@ -167,15 +145,7 @@ pub fn asm_all(g_args: &GlobalArgs, args: &AsmArgs) -> Result<(), Error> {
 			let bitmap = VeraBitmap::init_from_imageset(&b.id, &imageset)?;
 			bitmaps.push(bitmap);
 		}
-		perform_assemble(
-			&mut bitmaps.iter(),
-			&args.format,
-			&bm_dir,
-			None,
-			&mut line_start,
-			&args.sd_image,
-			None,
-		)?;
+		perform_assemble(&mut bitmaps.iter(), &args, None, &mut line_start)?;
 	}
 
 	Ok(())
@@ -190,45 +160,37 @@ pub struct AsmSelectArgs {
 
 pub fn asm_select(
 	g_args: &GlobalArgs,
-	asm_args: &AsmArgs,
+	mut asm_args: AsmArgs,
 	args: &AsmSelectArgs,
 ) -> Result<(), Error> {
 	let proj = common::load_project(g_args.project_file.clone())?;
 	let mut line_start = 10000;
+	asm_args.out_dir = ".".into();
 	// now look for the ID
 	if proj.palettes.contains_key(&args.asset_id) {
 		perform_assemble(
 			&mut proj.palettes.values().filter(|v| v.id == args.asset_id),
-			&asm_args.format,
-			".",
-			Some(&args.out_file),
+			&asm_args,
+			Some(args),
 			&mut line_start,
-			&asm_args.sd_image,
-			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
 	if proj.imagesets.contains_key(&args.asset_id) {
 		perform_assemble(
 			&mut proj.imagesets.values().filter(|v| v.id == args.asset_id),
-			&asm_args.format,
-			".",
-			Some(&args.out_file),
+			&asm_args,
+			Some(&args),
 			&mut line_start,
-			&asm_args.sd_image,
-			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
 	if proj.tilemaps.contains_key(&args.asset_id) {
 		perform_assemble(
 			&mut proj.tilemaps.values().filter(|v| v.id == args.asset_id),
-			&asm_args.format,
-			".",
-			Some(&args.out_file),
+			&asm_args,
+			Some(&args),
 			&mut line_start,
-			&asm_args.sd_image,
-			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -247,12 +209,9 @@ pub fn asm_select(
 		let sprite = VeraSprite::init_from_imageset(&sprite.id, &imageset)?;
 		perform_assemble(
 			&mut [sprite].to_vec().iter(),
-			&asm_args.format,
-			".",
-			Some(&args.out_file),
+			&asm_args,
+			Some(&args),
 			&mut line_start,
-			&asm_args.sd_image,
-			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}
@@ -271,12 +230,9 @@ pub fn asm_select(
 		let bitmap = VeraBitmap::init_from_imageset(&bitmap.id, &imageset)?;
 		perform_assemble(
 			&mut [bitmap].to_vec().iter(),
-			&asm_args.format,
-			".",
-			Some(&args.out_file),
+			&asm_args,
+			Some(&args),
 			&mut line_start,
-			&asm_args.sd_image,
-			Some(args.bin_address),
 		)?;
 		return Ok(());
 	}

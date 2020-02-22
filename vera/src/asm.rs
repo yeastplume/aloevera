@@ -116,6 +116,21 @@ impl AssembledString {
 	}
 }
 
+/// Mostly for tilemaps, information on
+/// how to conflate tilemap data to fit
+/// actual VERA tilemap dimensions
+/// starting address relative to start
+/// of tilemap
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ConflateInfo {
+	/// start offset from start of vera tilemap
+	start_offset: u32,
+	/// number of tiles to draw per row
+	stride: u32,
+	/// number of tiles to skip per row
+	skip: u32,
+}
+
 /// Holds raw assembled data, pre-formatting
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AssembledPrimitive {
@@ -127,6 +142,8 @@ pub struct AssembledPrimitive {
 	data: Vec<u8>,
 	/// Id, needed by some types of output
 	id: String,
+	/// Conflation data for tilemaps
+	conflate_info: Option<ConflateInfo>,
 }
 
 impl AssembledPrimitive {
@@ -136,7 +153,17 @@ impl AssembledPrimitive {
 			id: id.to_owned(),
 			meta: vec![],
 			data: vec![],
+			conflate_info: None,
 		}
+	}
+
+	/// set Tilemap values
+	pub fn set_tilemap_conflate_info(&mut self, start_offset: u32, stride: u32, skip: u32) {
+		self.conflate_info = Some(ConflateInfo {
+			start_offset,
+			stride,
+			skip,
+		});
 	}
 
 	/// Add another prim to this one, consuming second
@@ -158,19 +185,32 @@ impl AssembledPrimitive {
 	}
 
 	/// retrieve bin data formatted as bin data
-	pub fn data_as_bin(&self, address_bytes: Option<[u8; 2]>) -> Vec<u8> {
+	pub fn data_as_bin(
+		&self,
+		address_bytes: Option<[u8; 2]>,
+		conflate: bool,
+	) -> Result<Vec<u8>, Error> {
+		let mut data = self.data.clone();
+		if self.conflate_info.is_some() && conflate {
+			data = self.conflate_data()?;
+		}
 		//TODO: Some other method that doesn't involve cloning data
 		let mut address_bytes = match address_bytes {
 			Some(b) => b.to_vec(),
 			None => [0, 0].to_vec(),
 		};
-		address_bytes.append(&mut self.data.clone());
-		address_bytes
+		address_bytes.append(&mut data);
+		Ok(address_bytes)
 	}
 
 	/// retrieve the raw bin data
 	pub fn data_raw(&self) -> &Vec<u8> {
 		&self.data
+	}
+
+	/// Conflate raw data in-place
+	pub fn conflate_data(&self) -> Result<Vec<u8>, Error> {
+		Ok(self.data.clone())
 	}
 
 	/// Output Meta, formatted for assembly target
@@ -194,7 +234,17 @@ impl AssembledPrimitive {
 	}
 
 	/// Output data, formatted for assembly target
-	pub fn assemble_data(&self, out_format: AsmFormat) -> Result<AssembledString, Error> {
+	pub fn assemble_data(
+		&self,
+		out_format: AsmFormat,
+		conflate: bool,
+	) -> Result<AssembledString, Error> {
+		let mut data = &self.data;
+		let conf_data;
+		if self.conflate_info.is_some() && conflate {
+			conf_data = self.conflate_data()?;
+			data = &conf_data;
+		}
 		let mut retval = AssembledString::new(&out_format);
 		if out_format == AsmFormat::Cc65 {
 			retval.add(format!("#ifndef {}_H", self.id.to_uppercase()));
@@ -204,7 +254,7 @@ impl AssembledPrimitive {
 				self.id.to_uppercase()
 			));
 		}
-		for i in (0..self.data.len()).step_by(8) {
+		for i in (0..data.len()).step_by(8) {
 			let mut curval = String::from("");
 			curval += &match out_format {
 				AsmFormat::Ca65 => format!(".byte "),
@@ -219,13 +269,13 @@ impl AssembledPrimitive {
 			};
 			for j in 0..8 {
 				let index = i + j;
-				if index == self.data.len() {
+				if index == data.len() {
 					break;
 				}
 				curval += &match out_format {
-					AsmFormat::Ca65 => format!("${:02X}", self.data[index]),
-					AsmFormat::Basic => format!("{}", self.data[index]),
-					AsmFormat::Cc65 => format!("0x{:02x}", self.data[index]),
+					AsmFormat::Ca65 => format!("${:02X}", data[index]),
+					AsmFormat::Basic => format!("{}", data[index]),
+					AsmFormat::Cc65 => format!("0x{:02x}", data[index]),
 					AsmFormat::Bin => {
 						return Err(ErrorKind::InvalidAsmFormat(
 							"Attempt to format binary data as string".into(),
@@ -233,7 +283,7 @@ impl AssembledPrimitive {
 						.into());
 					}
 				};
-				if (j < 7 || out_format == AsmFormat::Cc65) && index < self.data.len() - 1 {
+				if (j < 7 || out_format == AsmFormat::Cc65) && index < data.len() - 1 {
 					curval += ",";
 				}
 			}
@@ -261,7 +311,7 @@ fn test_assemble() -> Result<(), Error> {
 	let meta_str = meta_strs.to_string(Some(line_count))?;
 	line_count += num_lines;
 
-	let data_strs = prim.assemble_data(AsmFormat::Basic)?;
+	let data_strs = prim.assemble_data(AsmFormat::Basic, false)?;
 	let data_str = data_strs.to_string(Some(line_count))?;
 
 	println!("Meta Basic");
@@ -274,7 +324,7 @@ fn test_assemble() -> Result<(), Error> {
 	let meta_strs = prim.assemble_meta(AsmFormat::Ca65)?;
 	let meta_str = meta_strs.to_string(None)?;
 
-	let data_strs = prim.assemble_data(AsmFormat::Ca65)?;
+	let data_strs = prim.assemble_data(AsmFormat::Ca65, false)?;
 	let data_str = data_strs.to_string(None)?;
 
 	println!("Meta Ca65");
