@@ -2,7 +2,7 @@
 # Don't run make from this directory, run
 # from subdirs
 
-X16_RUN = $(X16_EMU) -rom $(X16_ROM) $(X16_EMU_FLAGS) $(DEBUG)
+X16_RUN = $(X16_EMU) -rom $(X16_ROM) $(X16_EMU_FLAGS) $(DEBUG) $(SD_CARD)
 
 # Ensure ld65 and ca65 are on your path
 # Assembly flags
@@ -26,7 +26,7 @@ run_fresh:
 	$(X16_RUN)
 
 run_asm: OBJS_$(NAME)
-	$(X16_RUN) -prg $(NAME).prg
+	$(X16_RUN) -prg $(NAME).prg 
 
 run_bas: $(NAME).assembled.bas
 	$(X16_RUN) -bas $(NAME).assembled.bas
