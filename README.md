@@ -13,7 +13,7 @@ In a nutshell, Aloevera transforms images created with modern editors into forma
   * CC65 Header files
   * BASIC DATA Statements
   * .BIN Files (for use with the VLOAD Command)
-* Assists your resource creation pipeline by validating your input data and ensuring that your souce images match the format expected by your target VERA layer mode.
+* Assists your resource creation pipeline by validating your input data and ensuring that your source images match the format expected by your target VERA layer mode.
 * Provides helpful information to help you fix problems when your image data cannot be translated into the format expected by VERA
 * Gives you complete control of how and where assets are exported, allowing you to build a shippable 'Release' image
 * Integrates into your preferred build system or development process as a simple command-line tool with minimal overhead.
