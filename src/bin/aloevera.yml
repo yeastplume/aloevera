@@ -52,6 +52,7 @@ subcommands:
         - conflate_tilemaps:
             help: Fill tilemaps with 0 values so they match target VERA Tilemap dimensions (Always true when outputting as bin)
             short: c
+            long: conflate_tilemaps
             takes_value: false
      subcommands:
         - all:

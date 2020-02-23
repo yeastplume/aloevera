@@ -6,11 +6,16 @@
 
 Aloevera is a command-line tool that facilitates the development of graphical assets for use with the [Commander X16](https://commander-cx16.fandom.com/wiki/Commander_X16_Wiki).
 
-In a nutshell, Aloevera transforms images created with modern editors into Assembly (or BASIC) statements that can be directly imported into your X16 development project. It aims to be a simple, easily integrated tool that: 
+In a nutshell, Aloevera transforms images created with modern editors into formats that can be directly imported into your X16 development project. It aims to be a simple, easily integrated tool that: 
 
-* Outputs resources as easily-imported Assembly (or BASIC DATA) statements.
+* Outputs resources in a variety of formats ready to include or import into your X16 project, including:
+  * CA65-Compatible Assembly Statements (Which should also work in any assembler that supports a .BYTE statement)
+  * CC65 Header files
+  * BASIC DATA Statements
+  * .BIN Files (for use with the VLOAD Command)
 * Assists your resource creation pipeline by validating your input data and ensuring that your souce images match the format expected by your target VERA layer mode.
 * Provides helpful information to help you fix problems when your image data cannot be translated into the format expected by VERA
+* Gives you complete control of how and where assets are exported, allowing you to build a shippable 'Release' image
 * Integrates into your preferred build system or development process as a simple command-line tool with minimal overhead.
 * Supports all VERA modes and types, including:
     * Text

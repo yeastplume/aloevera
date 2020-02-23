@@ -14,7 +14,7 @@ In addition to this, it is also intended as a helper to ensure your image data i
 
 In a nutshell, Aloevera:
 
-* **Transforms** the output of modern image editors into assembly formats that can be included and used in your X16 projects.
+* **Transforms** the output of modern image editors into formats that can be included and used in your X16 projects.
 * **Validates** your source image data, ensuring it's been set up in a manner that can be properly translated into your target VERA display modes/and pixel depth (and informs you what the issue is when your data is incorrect)
 * **Integrates** into your project's build workflow as a simple command-line tool. If your build is set up correctly, you should be able to make changes directly in your image editor and have them show up instantly on the next run of your program.
 
@@ -53,7 +53,8 @@ This will create a new project file called `my_project.av` in the current direct
 
 ## The Examples
 
-All Aloevera concepts and commands are explored and illustrated via a series of detailed example. [Samples](../samples) are also provided for each example, which contain assembly and basic code as well as a small makefile illustrating how one could potentially use Aloevera in a larger project.
+All Aloevera concepts and commands are explored and illustrated via a series of detailed example. [Samples](../samples) are also provided for each example, which contain assembly and basic code as well as a small makefile illustrating how one could potentially use Aloevera in a larger project. Although most of the examples are intended as learning exercises that include data directly within their code, the [final sample](ex_007.md) discusses .BIN output and workflows in which resources are loaded separately.
+
 
 ### [Example 1: Intro to Aloevera - Importing a palette](./ex_001.md)
 ### [Example 2: Intro to Imagesets - Replacing the default font](./ex_002.md)
@@ -61,3 +62,4 @@ All Aloevera concepts and commands are explored and illustrated via a series of 
 ### [Example 4: Higher Depth Tilemaps - A more game-like tilemap](./ex_004.md)
 ### [Example 5: Sprites](./ex_005.md)
 ### [Example 6: Bitmaps](./ex_006.md)
+### [Example 7: .BIN Files, CC65 and Manual Layouts](./ex_007.md)
