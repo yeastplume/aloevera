@@ -15,6 +15,7 @@ project.av: $(RESOURCES)
 	$(ALOEVERA) -p project.av asm -f bin ./output/ all
 #	$(ALOEVERA) create sd_image terra.img
 #	$(ALOEVERA) -p project.av asm -f bin ./output/ -s terra.img all
+	$(ALOEVERA) -p project.av asm -f cc65 ./output/ all
 
 generate_resources: project.av
 

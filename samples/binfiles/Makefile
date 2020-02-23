@@ -1,6 +1,6 @@
 include ../Makefile.vars
 
-NAME = sd_card
+NAME = binfiles
 RESOURCES = kq5.png
 
 project.av: $(RESOURCES)
