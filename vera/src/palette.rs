@@ -291,6 +291,10 @@ impl Assemblable for VeraPalette {
 		&self.id
 	}
 
+	fn size_in_bytes(&self) -> Result<usize, Error> {
+		Ok(self.size())
+	}
+
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		let mut retval = AssembledPrimitive::new(self.id());
 		retval.add_meta(format!("{} - size is {}", self.id, self.size()));

@@ -109,6 +109,13 @@ impl<'a> Assemblable for VeraBitmap<'a> {
 		&self.id
 	}
 
+	fn size_in_bytes(&self) -> Result<usize, Error> {
+		match self.imageset {
+			Some(i) => Ok(i.size()),
+			None => Err(ErrorKind::BitmapNoImageSet(format!("{}", self.id)).into()),
+		}
+	}
+
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		let mut retval = AssembledPrimitive::new(self.id());
 		if self.imageset.is_none() {

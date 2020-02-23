@@ -102,6 +102,10 @@ impl Assemblable for VeraTileMapEntry {
 		"0"
 	}
 
+	fn size_in_bytes(&self) -> Result<usize, Error> {
+		Ok(2)
+	}
+
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		let mut retval = AssembledPrimitive::new(self.id());
 		let out_bytes = match self {
@@ -469,6 +473,10 @@ impl VeraTileMap {
 impl Assemblable for VeraTileMap {
 	fn id(&self) -> &str {
 		&self.id
+	}
+
+	fn size_in_bytes(&self) -> Result<usize, Error> {
+		Ok(self.size())
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {

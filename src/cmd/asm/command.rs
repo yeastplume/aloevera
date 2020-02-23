@@ -18,6 +18,9 @@ use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
 use vera::{AsmFormat, Assemblable, VeraBitmap, VeraSprite};
 
+const LOW_RAM_SIZE: usize = 38655;
+const LOW_RAM_WARN_THRESHOLD: f64 = 0.9;
+
 /// Arguments for asm commands
 pub struct AsmArgs {
 	pub out_dir: String,
@@ -31,10 +34,11 @@ fn perform_assemble<T>(
 	asm_args: &AsmArgs,
 	sel_args: Option<&AsmSelectArgs>,
 	line_start: &mut usize,
-) -> Result<(), Error>
+) -> Result<usize, Error>
 where
 	T: Assemblable,
 {
+	let mut assembled_size = 0;
 	for v in values {
 		let code = v.assemble()?;
 		let conflate = asm_args.format == AsmFormat::Bin || asm_args.conflate_tilemaps;
@@ -83,8 +87,17 @@ where
 			}
 		}
 		common::output_to_file(&file_name, output.as_bytes(), &asm_args.sd_image)?;
+		let size = v.size_in_bytes()?;
+		// Warn if we're getting close to t
+		info!("Resource {} has size {}", v.id(), size);
+		if size >= (LOW_RAM_SIZE as f64 * LOW_RAM_WARN_THRESHOLD) as usize
+			&& asm_args.format != AsmFormat::Bin
+		{
+			warn!("Resource {} has a size of {} bytes, which approaches or exceeds the size of Low RAM ({}) bytes. Consider outputting as .BIN instead.", v.id(), size, LOW_RAM_SIZE);
+		}
+		assembled_size += v.size_in_bytes()?;
 	}
-	Ok(())
+	Ok(assembled_size)
 }
 
 /// Assemble
@@ -94,21 +107,22 @@ pub fn asm_all(g_args: &GlobalArgs, mut args: AsmArgs) -> Result<(), Error> {
 	//common::remove_dir(&args.out_dir)?;
 	let mut line_start = 10000;
 	let start_dir = args.out_dir.clone();
+	let mut tot_size = 0;
 	// Output palettes
 	if !proj.palettes.is_empty() {
 		args.out_dir = format!("{}/palettes", start_dir);
 		common::create_dir(&args.out_dir)?;
-		perform_assemble(&mut proj.palettes.values(), &args, None, &mut line_start)?;
+		tot_size += perform_assemble(&mut proj.palettes.values(), &args, None, &mut line_start)?;
 	}
 	if !proj.imagesets.is_empty() {
 		args.out_dir = format!("{}/imagesets", start_dir);
 		common::create_dir(&args.out_dir)?;
-		perform_assemble(&mut proj.imagesets.values(), &args, None, &mut line_start)?;
+		tot_size += perform_assemble(&mut proj.imagesets.values(), &args, None, &mut line_start)?;
 	}
 	if !proj.tilemaps.is_empty() {
 		args.out_dir = format!("{}/tilemaps", start_dir);
 		common::create_dir(&args.out_dir)?;
-		perform_assemble(&mut proj.tilemaps.values(), &args, None, &mut line_start)?;
+		tot_size += perform_assemble(&mut proj.tilemaps.values(), &args, None, &mut line_start)?;
 	}
 	let mut sprites = vec![];
 	if !proj.sprites.is_empty() {
@@ -129,6 +143,7 @@ pub fn asm_all(g_args: &GlobalArgs, mut args: AsmArgs) -> Result<(), Error> {
 			let sprite = VeraSprite::init_from_imageset(&s.id, &imageset)?;
 			sprites.push(sprite);
 		}
+		// Don't include BMP size in total, since the imageset is already accounted for
 		perform_assemble(&mut sprites.iter(), &args, None, &mut line_start)?;
 	}
 	let mut bitmaps = vec![];
@@ -150,7 +165,14 @@ pub fn asm_all(g_args: &GlobalArgs, mut args: AsmArgs) -> Result<(), Error> {
 			let bitmap = VeraBitmap::init_from_imageset(&b.id, &imageset)?;
 			bitmaps.push(bitmap);
 		}
+		// Don't include BMP size in total, since the imageset is already accounted for
 		perform_assemble(&mut bitmaps.iter(), &args, None, &mut line_start)?;
+	}
+
+	if tot_size >= (LOW_RAM_SIZE as f64 * LOW_RAM_WARN_THRESHOLD) as usize
+		&& args.format != AsmFormat::Bin
+	{
+		warn!("Combined resources have a size of {} bytes, which approaches or exceeds the size of Low RAM ({}) bytes. Consider outputting as .BIN instead.", tot_size, LOW_RAM_SIZE);
 	}
 
 	Ok(())

@@ -503,6 +503,10 @@ impl Assemblable for VeraImageSet {
 		&self.id
 	}
 
+	fn size_in_bytes(&self) -> Result<usize, Error> {
+		Ok(self.size())
+	}
+
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {
 		if !self.formatted {
 			return Err(ErrorKind::ImageSetNotFormatted(format!("{}", self.id)).into());
