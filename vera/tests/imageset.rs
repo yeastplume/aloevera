@@ -343,3 +343,26 @@ fn imageset_pal_64_4bpp() -> Result<(), Error> {
 
 	Ok(())
 }
+
+/*#[test]
+fn imageset_crash() -> Result<(), Error> {
+	let test_png = include_bytes!("data/imageset/crash-test-pal.png");
+	let pal_config = VeraPaletteLoadConfig {
+		direct_load: true,
+		include_defaults: false,
+		sort: false,
+		..VeraPaletteLoadConfig::default()
+	};
+	let palette = VeraPalette::derive_from_png("pal", test_png.to_vec(), &pal_config)?;
+	println!("{}", palette);
+
+	let imageset_png = include_bytes!("data/imageset/crash-test-imageset.png");
+	let mut set = VeraImageSet::new("imageset_1", 16, 16);
+	let config = VeraImageSetLoadConfig::default();
+	set.load_from_png(imageset_png.to_vec(), &config)?;
+	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
+	println!("{}", set);
+
+	Ok(())
+
+}*/
