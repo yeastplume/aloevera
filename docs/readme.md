@@ -46,7 +46,7 @@ All Aloevera operations are performed on project files, which persist the state 
 To create a new project file, use the `create` command as in the example below:
 
 ```.sh
-aloevera create my_project.av
+aloevera create project my_project.av
 ```
 
 This will create a new project file called `my_project.av` in the current directory. Feel free to look through the contents of the file, but remember its contents are not meant to be edited directly.
