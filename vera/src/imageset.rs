@@ -649,6 +649,9 @@ fn find_optimal_range(
 		// if we're in range, we're done
 		if max - min <= range as usize {
 			for i in 0..permutation.len() {
+				if i == range_vals.len() {
+					break;
+				}
 				range_vals[i].1 = vec![usize::from_str_radix(permutation[i], 10)?];
 				if max == min {
 					break;
