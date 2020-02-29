@@ -118,7 +118,7 @@ impl Assemblable for VeraTileMapEntry {
 			VeraTileMapEntry::Tile234(index, pal_offset, _, _) => {
 				let byte0 = (index & 0x00ff) as u8;
 				let mut byte1 = pal_offset / 16 << 4;
-				let high_index = (index & 0xff00) >> 14;
+				let high_index = (index >> 8) as u8 & 3;
 				byte1 |= high_index as u8;
 				(byte0, byte1)
 			}
