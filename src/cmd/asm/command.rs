@@ -56,8 +56,7 @@ where
 			)?;
 			(asm_meta.to_string(None)?, "meta")
 		} else {
-			let asm_data =
-				code.assemble_data(asm_args.format.clone(), asm_args.conflate_tilemaps)?;
+			let asm_data = code.assemble_data(asm_args.format.clone(), conflate)?;
 			let data_lc = asm_data.line_count();
 			let output = asm_meta.to_string(Some(*line_start))?;
 			let res = format!(

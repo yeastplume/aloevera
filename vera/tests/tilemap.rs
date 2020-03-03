@@ -18,7 +18,7 @@ use aloevera_vera::Error;
 use aloevera_vera::{AsmFormat, Assemblable};
 use aloevera_vera::{
 	VeraImageSet, VeraImageSetLoadConfig, VeraPalette, VeraPaletteLoadConfig, VeraPixelDepth,
-	VeraTileMap, VeraTileMapDim, VeraTileMapMode,
+	VeraTileMap, VeraTileMapDim, VeraTileMapEntry, VeraTileMapMode,
 };
 
 #[test]
@@ -187,6 +187,72 @@ fn tilemap_128_x_32_x_16_4bpp() -> Result<(), Error> {
 	let code = tilemap.assemble()?;
 	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
+	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
+	println!("{}", asm.to_string(None)?);
+
+	Ok(())
+}
+
+#[test]
+fn tilemap_64_x_32_x_8_4bpp() -> Result<(), Error> {
+	init_test_logger();
+	let paldata = include_bytes!("data/tilemap/palette-large.png");
+	// Load Palette straigt from tilemap
+	let pal_config = VeraPaletteLoadConfig {
+		direct_load: true,
+		include_defaults: false,
+		sort: false,
+		..VeraPaletteLoadConfig::default()
+	};
+	let palette = VeraPalette::derive_from_png("palette_error", paldata.to_vec(), &pal_config)?;
+	println!("{}", palette);
+
+	// create imageset from tilemap
+	let setdata = include_bytes!("data/tilemap/imageset-large-4bpp.png");
+	let mut set = VeraImageSet::new("tileset_error", 8, 8);
+	let config = VeraImageSetLoadConfig::default();
+	set.load_from_png(setdata.to_vec(), &config)?;
+	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
+	println!("{}", set);
+
+	let frame = set.frame_at(256)?;
+	println!("{}", frame);
+
+	// Init tilemap
+	let mut tilemap = VeraTileMap::init_from_imageset(
+		"tilemap_error",
+		VeraTileMapMode::Tile4BPP,
+		VeraTileMapDim::Dim64,
+		VeraTileMapDim::Dim32,
+		&set,
+	)?;
+
+	// And a correct one
+	let mapdata = include_bytes!("data/tilemap/tilemap-large-4bpp.png");
+	tilemap.load_from_png(mapdata.to_vec(), None, 0, 0, 0)?;
+
+	// Check high bit set correctly
+	let mut high_bit_index = 0;
+
+	for (i, f) in tilemap.get_tiles().iter().enumerate() {
+		if let VeraTileMapEntry::Tile234(281, _, _, _) = f {
+			high_bit_index = i;
+			break;
+		}
+	}
+
+	let code = tilemap.assemble()?;
+	println!("{}", tilemap);
+
+	let low = code.data_raw()[high_bit_index * 2];
+	let high = code.data_raw()[high_bit_index * 2 + 1];
+	let mut test_u16: u16 = (high as u16 & 3) << 8;
+	test_u16 |= low as u16;
+	assert_eq!(281, test_u16);
+
+	let asm = code.assemble_meta(crate::AsmFormat::Ca65, false)?;
+	println!("{}", asm.to_string(None)?);
+
 	let asm = code.assemble_data(crate::AsmFormat::Ca65, false)?;
 	println!("{}", asm.to_string(None)?);
 

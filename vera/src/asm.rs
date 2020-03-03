@@ -245,6 +245,11 @@ impl AssembledPrimitive {
 		for _ in 0..(c_data.tilemap_length - ret_data.len()) {
 			ret_data.push(0);
 		}
+		if ret_data.len() != c_data.tilemap_length {
+			return Err(
+				ErrorKind::InvalidAsmFormat("Conflated tilemap length is wrong".into()).into(),
+			);
+		}
 		Ok(ret_data)
 	}
 

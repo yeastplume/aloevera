@@ -43,4 +43,4 @@ pub use imageset::{VeraImage, VeraImageSet, VeraImageSetLoadConfig, VeraPixelDep
 pub use palette::{VeraPalette, VeraPaletteEntry, VeraPaletteLoadConfig};
 pub use png_util::png_to_frames;
 pub use sprite::VeraSprite;
-pub use tilemap::{VeraTileMap, VeraTileMapDim, VeraTileMapMode};
+pub use tilemap::{VeraTileMap, VeraTileMapDim, VeraTileMapEntry, VeraTileMapMode};

@@ -468,6 +468,11 @@ impl VeraTileMap {
 		let skip = self.map_width.val_as_u32() * 2 - pane_width * 2;
 		(start_index, stride, skip)
 	}
+
+	/// Tiles
+	pub fn get_tiles(&self) -> &Vec<VeraTileMapEntry> {
+		&self.tiles
+	}
 }
 
 impl Assemblable for VeraTileMap {
