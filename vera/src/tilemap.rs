@@ -102,7 +102,7 @@ impl Assemblable for VeraTileMapEntry {
 		"0"
 	}
 
-	fn size_in_bytes(&self) -> Result<usize, Error> {
+	fn size_in_bytes(&self, _conflated: bool) -> Result<usize, Error> {
 		Ok(2)
 	}
 
@@ -480,8 +480,12 @@ impl Assemblable for VeraTileMap {
 		&self.id
 	}
 
-	fn size_in_bytes(&self) -> Result<usize, Error> {
-		Ok(self.size())
+	fn size_in_bytes(&self, conflated: bool) -> Result<usize, Error> {
+		if !conflated {
+			Ok(self.size())
+		} else {
+			Ok(self.map_width.val_as_u32() as usize * self.map_height.val_as_u32() as usize * 2)
+		}
 	}
 
 	fn assemble(&self) -> Result<AssembledPrimitive, Error> {

@@ -122,7 +122,7 @@ impl<'a> Assemblable for VeraSprite<'a> {
 		&self.id
 	}
 
-	fn size_in_bytes(&self) -> Result<usize, Error> {
+	fn size_in_bytes(&self, _conflated: bool) -> Result<usize, Error> {
 		match self.imageset {
 			Some(i) => Ok(i.size()),
 			None => Err(ErrorKind::SpriteNoImageSet(format!("{}", self.id)).into()),

@@ -86,7 +86,7 @@ where
 			}
 		}
 		common::output_to_file(&file_name, output.as_bytes(), &asm_args.sd_image)?;
-		let size = v.size_in_bytes()?;
+		let size = v.size_in_bytes(conflate)?;
 		// Warn if we're getting close to t
 		info!("Resource {} has size {}", v.id(), size);
 		if size >= (LOW_RAM_SIZE as f64 * LOW_RAM_WARN_THRESHOLD) as usize
@@ -94,7 +94,7 @@ where
 		{
 			warn!("Resource {} has a size of {} bytes, which approaches or exceeds the size of Low RAM ({}) bytes. Consider outputting as .BIN instead.", v.id(), size, LOW_RAM_SIZE);
 		}
-		assembled_size += v.size_in_bytes()?;
+		assembled_size += v.size_in_bytes(conflate)?;
 	}
 	Ok(assembled_size)
 }

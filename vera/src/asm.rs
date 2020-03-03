@@ -29,7 +29,7 @@ pub trait Assemblable {
 	fn id(&self) -> &str;
 
 	/// Size, in bytes, of assembled asset
-	fn size_in_bytes(&self) -> Result<usize, Error>;
+	fn size_in_bytes(&self, conflated_size: bool) -> Result<usize, Error>;
 }
 
 /// Enum for variations ToAsm implementors can assemble to

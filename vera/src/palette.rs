@@ -291,7 +291,7 @@ impl Assemblable for VeraPalette {
 		&self.id
 	}
 
-	fn size_in_bytes(&self) -> Result<usize, Error> {
+	fn size_in_bytes(&self, _conflated: bool) -> Result<usize, Error> {
 		Ok(self.size())
 	}
 
