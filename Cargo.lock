@@ -7,11 +7,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "aloevera"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
- "aloevera_proj 0.2.0",
- "aloevera_util 0.2.0",
- "aloevera_vera 0.2.0",
+ "aloevera_proj 0.2.1",
+ "aloevera_util 0.2.1",
+ "aloevera_vera 0.2.1",
  "built 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -21,10 +21,10 @@ dependencies = [
 
 [[package]]
 name = "aloevera_proj"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
- "aloevera_util 0.2.0",
- "aloevera_vera 0.2.0",
+ "aloevera_util 0.2.1",
+ "aloevera_vera 0.2.1",
  "backtrace 0.3.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -38,7 +38,7 @@ dependencies = [
 
 [[package]]
 name = "aloevera_util"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "backtrace 0.3.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "fatfs 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -57,9 +57,9 @@ dependencies = [
 
 [[package]]
 name = "aloevera_vera"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
- "aloevera_util 0.2.0",
+ "aloevera_util 0.2.1",
  "failure 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure_derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
