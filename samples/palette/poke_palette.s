@@ -6,11 +6,11 @@ VERA_DATA_PORT = $9F23
 .code
 jmp start
 .proc load_palette
-	lda #$0
+	lda #$00
 	sta VERA_ADDR
-	lda #$10
+	lda #$FA
 	sta VERA_ADDR + 1
-	lda #$1F
+	lda #$11
 	sta VERA_ADDR + 2
 	ldx #0
 	loop:
