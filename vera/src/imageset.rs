@@ -612,6 +612,15 @@ fn find_optimal_range(
 	let vector_of_slices: Vec<&[&str]> = tmp.iter().map(AsRef::as_ref).collect();
 
 	// Initialize the Permutator
+	if vector_of_slices.len() == 1 {
+		// In the case of only one pixel to match, don't attempt to call permutator, which crashes out,
+		// just take min value
+		let mut min = usize::from_str_radix(vector_of_slices[0][0], 10).unwrap();
+		if align_to_16 {
+			min -= min % 16;
+		}
+		return Ok((true, min));
+	}
 	let permutator = Permutator::new(&vector_of_slices);
 
 	// iteration 2: allocates a new buffer for each permutation
