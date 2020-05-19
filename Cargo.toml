@@ -1,6 +1,6 @@
 [package]
 name = "aloevera"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Revcore Technologies Ltd."]
 description = "Graphics Asset Pipeline for the Commander X16"
 license = "Apache-2.0"
@@ -25,6 +25,6 @@ log = "0.4"
 failure = "0.1"
 failure_derive = "0.1"
 
-aloevera_util = { path = "./util", version = "0.2.1" }
-aloevera_proj = { path = "./proj", version = "0.2.1" }
-aloevera_vera = { path = "./vera", version = "0.2.1" }
+aloevera_util = { path = "./util", version = "0.2.2" }
+aloevera_proj = { path = "./proj", version = "0.2.2" }
+aloevera_vera = { path = "./vera", version = "0.2.2" }
