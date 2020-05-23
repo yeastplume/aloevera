@@ -322,6 +322,26 @@ impl VeraTileMap {
 		self.tiles.len() * 2
 	}
 
+	/// map width as u32
+	pub fn map_width(&self) -> u32 {
+		self.map_width.val_as_u32()
+	}
+
+	/// map height as u32
+	pub fn map_height(&self) -> u32 {
+		self.map_height.val_as_u32()
+	}
+
+	/// tile width as u32
+	pub fn tile_width(&self) -> u32 {
+		self.tile_height.val_as_u32()
+	}
+
+	/// tile height as u32
+	pub fn tile_height(&self) -> u32 {
+		self.tile_height.val_as_u32()
+	}
+
 	/// Return data formatted appropriately for the current map mode
 	fn entry_from_image(
 		&self,

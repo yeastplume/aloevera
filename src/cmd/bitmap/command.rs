@@ -52,3 +52,17 @@ pub fn bitmap_init(g_args: &GlobalArgs, args: &BitmapInitArgs) -> Result<(), Err
 
 	Ok(())
 }
+
+pub fn bitmap_list(g_args: &GlobalArgs) -> Result<(), Error> {
+	let proj = common::load_project(g_args.project_file.clone())?;
+	println!("Bitmaps:");
+	for (id, bitmap) in proj.bitmaps {
+		println!(
+			"  {}: width {} depth {}",
+			id,
+			bitmap.width.val_as_u32(),
+			bitmap.depth
+		);
+	}
+	Ok(())
+}

@@ -39,6 +39,7 @@ pub fn execute_palette_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result
 			let a = arg_parse!(parse_palette_import_args(g_args, args));
 			command::palette_import(g_args, &a)
 		}
+		("list", Some(_)) => command::palette_list(g_args),
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera palette --help' for details");
 			return Err(ErrorKind::ArgumentError(msg).into());

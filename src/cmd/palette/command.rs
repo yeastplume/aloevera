@@ -48,3 +48,22 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 
 	Ok(())
 }
+
+/// Palette list command
+pub fn palette_list(g_args: &GlobalArgs) -> Result<(), Error> {
+	// load up the project json
+	let project_file = match &g_args.project_file {
+		Some(f) => f,
+		None => {
+			return Err(ErrorKind::ArgumentError("Missing project file name".to_string()).into())
+		}
+	};
+	let proj_json: String = common::read_file_string(&project_file)?;
+	let proj = AloeVeraProject::new_from_json(&proj_json)?;
+	println!("Palettes:");
+	for (id, palette) in proj.palettes {
+		println!("  {}: {} colors", id, palette.len());
+	}
+
+	Ok(())
+}
