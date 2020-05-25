@@ -38,7 +38,7 @@ impl fmt::Display for VeraBitmapDim {
 }
 
 impl VeraBitmapDim {
-	fn val_as_u32(&self) -> u32 {
+	pub fn val_as_u32(&self) -> u32 {
 		match self {
 			VeraBitmapDim::Dim320 => 320,
 			VeraBitmapDim::Dim640 => 640,

@@ -44,7 +44,7 @@ impl fmt::Display for VeraSpriteDim {
 }
 
 impl VeraSpriteDim {
-	fn _val_as_u32(&self) -> u32 {
+	pub fn val_as_u32(&self) -> u32 {
 		match self {
 			VeraSpriteDim::Dim8 => 8,
 			VeraSpriteDim::Dim16 => 16,

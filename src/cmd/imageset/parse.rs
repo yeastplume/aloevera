@@ -81,6 +81,7 @@ pub fn execute_imageset_command(g_args: &GlobalArgs, args: &ArgMatches) -> Resul
 			let a = arg_parse!(parse_imageset_format_args(g_args, args));
 			command::imageset_format(g_args, &a)
 		}
+		("list", Some(_)) => command::imageset_list(g_args),
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera imageset --help' for details");
 			return Err(ErrorKind::ArgumentError(msg).into());

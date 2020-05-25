@@ -84,6 +84,8 @@ subcommands:
               - input_file:
                   help: Input PNG file name
                   index: 2
+        - list:
+            about: List palettes in a project file
   - imageset:
       about: Import and manipulate image sets
       subcommands:
@@ -114,6 +116,8 @@ subcommands:
               - pixel_depth:
                   help: Target Pixel Depth (8, 4, 2 or 1)
                   index: 3
+        - list:
+            about: List image sets in a project file
   - tilemap:
       about: Import and manipulate tilemaps
       subcommands:
@@ -183,6 +187,8 @@ subcommands:
                   short: c
                   takes_value: true
                   default_value: "0"
+        - list:
+            about: List tilemaps in a project file
   - sprite:
       about: Interpret an existing Imageset as a Sprite
       subcommands:
@@ -195,6 +201,8 @@ subcommands:
               - imageset_id:
                   help: ID of the existing, formatted Imageset to use as a Sprite
                   index: 2
+        - list:
+            about: List sprites in a project file
   - bitmap:
       about: Interpret an existing Imageset as a Bitmap
       subcommands:
@@ -207,3 +215,5 @@ subcommands:
               - imageset_id:
                   help: ID of the existing, formatted Imageset to use as a Bitmap
                   index: 2
+        - list:
+            about: List bitmaps in a project file
