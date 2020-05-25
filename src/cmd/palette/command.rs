@@ -26,13 +26,26 @@ pub struct PaletteImportArgs {
 
 /// Palette import command
 pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(), Error> {
-	let png_bytes = common::read_file_bin(&args.input_file)?;
-	let pal_config = VeraPaletteLoadConfig {
-		direct_load: true,
-		include_defaults: false,
-		sort: false,
+	let is_gpl = args.input_file.ends_with("gpl") || args.input_file.ends_with("GPL");
+	let palette = match is_gpl {
+		true => {
+			let pal_config = VeraPaletteLoadConfig {
+				direct_load: true,
+				include_defaults: false,
+				sort: false,
+			};
+			VeraPalette::derive_from_gpl(&args.id, &args.input_file, &pal_config).expect("Error")
+		}
+		false => {
+			let png_bytes = common::read_file_bin(&args.input_file)?;
+			let pal_config = VeraPaletteLoadConfig {
+				direct_load: true,
+				include_defaults: false,
+				sort: false,
+			};
+			VeraPalette::derive_from_png(&args.id, png_bytes, &pal_config).expect("error")
+		}
 	};
-	let palette = VeraPalette::derive_from_png(&args.id, png_bytes, &pal_config)?;
 	// load up the project json
 	let project_file = match &g_args.project_file {
 		Some(f) => f,

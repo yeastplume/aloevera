@@ -13,8 +13,11 @@
 
 //! Vera Palette definition
 
+extern crate gimp_palette;
+
 use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
+use gimp_palette::{NewPaletteError, Palette};
 use std::fmt;
 
 const PALETTE_SIZE: usize = 256;
@@ -162,6 +165,54 @@ impl VeraPalette {
 	/// Size in bytes
 	pub fn size(&self) -> usize {
 		self.entries.len() * 2
+	}
+
+	/// Derives a palette from the given Gimp gpl file
+	pub fn derive_from_gpl(
+		id: &str,
+		gpl_file: &str,
+		config: &VeraPaletteLoadConfig,
+	) -> Result<Self, Error> {
+		let gimp_palette = match Palette::read_from_file(&gpl_file) {
+			Ok(p) => p,
+			Err(e) => match e {
+				NewPaletteError::NoColors => {
+					return Err(ErrorKind::GenericError(format!("No colors loaded")).into())
+				}
+				NewPaletteError::InvalidData { line_num, val } => {
+					return Err(ErrorKind::GenericError(format!(
+						"Line {} has invalid data: {}",
+						line_num, val
+					))
+					.into())
+				}
+				NewPaletteError::IoErr(io_err) => {
+					return Err(ErrorKind::GenericError(format!("I/O error {}", io_err)).into())
+				}
+			},
+		};
+		debug!(
+			"Palette load: Gimp palette {} with {} colors",
+			gimp_palette.get_name(),
+			gimp_palette.get_colors().len()
+		);
+		let mut palette = match config.include_defaults {
+			true => VeraPalette::blank_with_defaults(id),
+			false => VeraPalette::blank(id),
+		};
+		for color in gimp_palette.get_colors() {
+			palette.add_entry(
+				config.direct_load,
+				color.r as u8,
+				color.g as u8,
+				color.b as u8,
+			)?;
+		}
+		if config.sort {
+			palette.sort();
+		}
+		info!("Palette creation successful");
+		Ok(palette)
 	}
 
 	/// Derives a palette from the given png image

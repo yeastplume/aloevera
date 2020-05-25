@@ -18,3 +18,4 @@ serde_derive = "1"
 png = "0.15"
 permutate = "0.3"
 aloevera_util = { path = "../util", version = "0.2.2" }
+gimp_palette = { version = "0.1.1" }
