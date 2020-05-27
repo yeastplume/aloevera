@@ -34,7 +34,7 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 				include_defaults: false,
 				sort: false,
 			};
-			VeraPalette::derive_from_gpl(&args.id, &args.input_file, &pal_config).expect("Error")
+			VeraPalette::derive_from_gpl(&args.id, &args.input_file, &pal_config)?
 		}
 		false => {
 			let png_bytes = common::read_file_bin(&args.input_file)?;
@@ -43,7 +43,7 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 				include_defaults: false,
 				sort: false,
 			};
-			VeraPalette::derive_from_png(&args.id, png_bytes, &pal_config).expect("error")
+			VeraPalette::derive_from_png(&args.id, png_bytes, &pal_config)?
 		}
 	};
 	// load up the project json
