@@ -84,17 +84,15 @@ fn palette_8bpp_indexed() -> Result<(), Error> {
 }
 
 #[test]
-fn palette_gimp() -> Result<(), Error> {
+fn palette_gpl() -> Result<(), Error> {
 	init_test_logger();
-	// Unclear why the path needs to be different for this test compared to
-	// the other tests which use include_bytes().
-	let test_gpl = "tests/data/palette/palette-gimp.gpl";
+	let test_gpl = include_bytes!("data/palette/palette-gimp.gpl");
 	let pal_config = VeraPaletteLoadConfig {
 		direct_load: true,
 		include_defaults: false,
 		sort: false,
 	};
-	let palette = VeraPalette::derive_from_gpl("pal", &test_gpl, &pal_config)?;
+	let palette = VeraPalette::derive_from_gpl("pal", test_gpl.to_vec(), &pal_config)?;
 	assert_eq!(
 		palette.value_at_index(0)?,
 		VeraPaletteEntry { r: 0, g: 0, b: 0 }
