@@ -38,3 +38,6 @@ pub mod logger;
 pub use crate::logger::{init_logger, init_test_logger};
 
 pub mod hex;
+
+// Parsing Gimp .gpl files
+pub mod gpl;

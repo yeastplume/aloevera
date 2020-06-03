@@ -15,6 +15,7 @@
 
 use crate::{Assemblable, AssembledPrimitive};
 use crate::{Error, ErrorKind};
+use aloevera_util::gpl::parse_gpl_from_bytes;
 use std::fmt;
 
 const PALETTE_SIZE: usize = 256;
@@ -162,6 +163,41 @@ impl VeraPalette {
 	/// Size in bytes
 	pub fn size(&self) -> usize {
 		self.entries.len() * 2
+	}
+
+	/// Derives a palette from the given Gimp gpl file
+	pub fn derive_from_gpl(
+		id: &str,
+		gpl_data: Vec<u8>,
+		config: &VeraPaletteLoadConfig,
+	) -> Result<Self, Error> {
+		let gpl_palette = match parse_gpl_from_bytes(gpl_data) {
+			Ok(p) => p,
+			Err(s) => {
+				return Err(ErrorKind::GenericError(format!("Error: {}", s)).into());
+			}
+		};
+		debug!(
+			"Palette load: Gimp palette with {} colors",
+			gpl_palette.len()
+		);
+		let mut palette = match config.include_defaults {
+			true => VeraPalette::blank_with_defaults(id),
+			false => VeraPalette::blank(id),
+		};
+		for color in gpl_palette.iter() {
+			palette.add_entry(
+				config.direct_load,
+				color.0 as u8,
+				color.1 as u8,
+				color.2 as u8,
+			)?;
+		}
+		if config.sort {
+			palette.sort();
+		}
+		info!("Palette creation successful");
+		Ok(palette)
 	}
 
 	/// Derives a palette from the given png image

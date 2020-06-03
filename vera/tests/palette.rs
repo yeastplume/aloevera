@@ -82,3 +82,40 @@ fn palette_8bpp_indexed() -> Result<(), Error> {
 
 	Ok(())
 }
+
+#[test]
+fn palette_gpl() -> Result<(), Error> {
+	init_test_logger();
+	let test_gpl = include_bytes!("data/palette/palette-gimp.gpl");
+	let pal_config = VeraPaletteLoadConfig {
+		direct_load: true,
+		include_defaults: false,
+		sort: false,
+	};
+	let palette = VeraPalette::derive_from_gpl("pal", test_gpl.to_vec(), &pal_config)?;
+	assert_eq!(
+		palette.value_at_index(0)?,
+		VeraPaletteEntry { r: 0, g: 0, b: 0 }
+	);
+	assert_eq!(
+		palette.value_at_index(2)?,
+		VeraPaletteEntry {
+			r: 15,
+			g: 15,
+			b: 15
+		}
+	);
+	assert_eq!(
+		palette.value_at_index(4)?,
+		VeraPaletteEntry { r: 8, g: 6, b: 1 }
+	);
+	assert_eq!(
+		palette.value_at_index(10)?,
+		VeraPaletteEntry { r: 9, g: 9, b: 9 }
+	);
+	println!("{}", palette);
+
+	assert_eq!(palette.len(), 16);
+
+	Ok(())
+}
