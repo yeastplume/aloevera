@@ -1,6 +1,6 @@
 [package]
 name = "aloevera_util"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Revcore Technologies Ltd."]
 description = "Aloevera utils crate."
 license = "Apache-2.0"
