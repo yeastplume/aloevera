@@ -11,37 +11,27 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+use std::convert::TryFrom;
+
 use clap::ArgMatches;
 
-use super::command::{self, BitmapInitArgs};
-use crate::cmd::common::{self, GlobalArgs};
+use super::command::{self, ListArgs, ListObjectType};
+use crate::cmd::common::GlobalArgs;
 use crate::{Error, ErrorKind};
 
-pub fn parse_bitmap_init_args(
-	g_args: &GlobalArgs,
-	args: &ArgMatches,
-) -> Result<BitmapInitArgs, Error> {
+pub fn parse_list_args(g_args: &GlobalArgs, args: &ArgMatches) -> Result<ListArgs, Error> {
 	if g_args.project_file.is_none() {
 		let msg = format!("--project_file is required in this context");
 		return Err(ErrorKind::ArgumentError(msg).into());
 	}
-	let id = common::parse_required(args, "id")?;
-	let imageset_id = common::parse_required(args, "imageset_id")?;
-	Ok(BitmapInitArgs {
-		id: id.to_owned(),
-		imageset_id: imageset_id.into(),
-	})
+	let object_type = match args.value_of("object_type") {
+		Some(v) => ListObjectType::try_from(v)?,
+		None => ListObjectType::All,
+	};
+	Ok(ListArgs { object_type })
 }
 
-pub fn execute_bitmap_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
-	match args.subcommand() {
-		("init", Some(args)) => {
-			let a = arg_parse!(parse_bitmap_init_args(g_args, args));
-			command::bitmap_init(g_args, &a)
-		}
-		_ => {
-			let msg = format!("Unknown sub command, use 'aloevera bitmap --help' for details");
-			return Err(ErrorKind::ArgumentError(msg).into());
-		}
-	}
+pub fn execute_list_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
+	let a = arg_parse!(parse_list_args(g_args, args));
+	command::list(g_args, &a)
 }

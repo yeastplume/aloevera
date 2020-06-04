@@ -79,29 +79,3 @@ pub fn imageset_format(g_args: &GlobalArgs, args: &ImageSetFormatArgs) -> Result
 
 	Ok(())
 }
-
-/// Imageset list
-pub fn imageset_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Image sets:");
-	for (id, imageset) in proj.imagesets {
-		match imageset.depth {
-			None => println!(
-				"  {}: {} {}x{} frames",
-				id,
-				imageset.frame_data.len(),
-				imageset.frame_width,
-				imageset.frame_height
-			),
-			pixel_depth => print!(
-				"  {}: {} {}x{} frames depth {}",
-				id,
-				imageset.frame_data.len(),
-				imageset.frame_width,
-				imageset.frame_height,
-				pixel_depth.unwrap()
-			),
-		}
-	}
-	Ok(())
-}

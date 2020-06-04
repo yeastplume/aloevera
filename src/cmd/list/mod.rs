@@ -11,16 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#[macro_use]
-pub mod common;
 
-pub mod asm;
-pub mod bitmap;
-pub mod create;
-pub mod imageset;
-pub mod list;
-pub mod palette;
-pub mod sprite;
-pub mod tilemap;
-
-pub mod execute;
+pub mod command;
+pub mod parse;

@@ -87,7 +87,6 @@ pub fn execute_tilemap_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result
 			let a = arg_parse!(parse_load_tilemap_args(g_args, args));
 			command::tilemap_load(g_args, &a)
 		}
-		("list", Some(_)) => command::tilemap_list(g_args),
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera tilemap --help' for details");
 			return Err(ErrorKind::ArgumentError(msg).into());

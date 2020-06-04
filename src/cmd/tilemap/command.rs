@@ -101,21 +101,3 @@ pub fn tilemap_load(g_args: &GlobalArgs, args: &LoadTileMapArgs) -> Result<(), E
 
 	Ok(())
 }
-
-/// Tilemap list command
-pub fn tilemap_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Tilemaps:");
-	for (id, tilemap) in proj.tilemaps {
-		println!(
-			"  {}: map {}x{} tiles {}x{} mode {}",
-			id,
-			tilemap.map_width(),
-			tilemap.map_height(),
-			tilemap.tile_width(),
-			tilemap.tile_height(),
-			tilemap.mode
-		);
-	}
-	Ok(())
-}

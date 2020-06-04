@@ -39,7 +39,6 @@ pub fn execute_sprite_command(g_args: &GlobalArgs, args: &ArgMatches) -> Result<
 			let a = arg_parse!(parse_sprite_init_args(g_args, args));
 			command::sprite_init(g_args, &a)
 		}
-		("list", Some(_)) => command::sprite_list(g_args),
 		_ => {
 			let msg = format!("Unknown sub command, use 'aloevera sprite --help' for details");
 			return Err(ErrorKind::ArgumentError(msg).into());

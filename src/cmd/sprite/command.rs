@@ -52,19 +52,3 @@ pub fn sprite_init(g_args: &GlobalArgs, args: &SpriteInitArgs) -> Result<(), Err
 
 	Ok(())
 }
-
-/// Sprite list command
-pub fn sprite_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Sprites:");
-	for (id, sprite) in proj.sprites {
-		print!(
-			"  {}: {}x{} depth {}",
-			id,
-			sprite.frame_width.val_as_u32(),
-			sprite.frame_height.val_as_u32(),
-			sprite.depth
-		);
-	}
-	Ok(())
-}
