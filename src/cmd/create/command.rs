@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::Error;
-use proj::{AloeVeraProject, Jsonable};
+use proj::{AloeVeraProject, Binable};
 use util::fat;
 
 /// Arguments for the initial create project command
@@ -30,8 +30,7 @@ pub fn create_project(args: &CreateProjectArgs) -> Result<(), Error> {
 	info!("Creating new project file at: {}", args.output_file);
 
 	let proj = AloeVeraProject::new(id);
-	let json = proj.to_json()?;
-	crate::cmd::common::output_to_file(&args.output_file, &json.as_bytes(), &None)?;
+	crate::cmd::common::output_to_file(&args.output_file, &proj.to_bin()?, &None)?;
 
 	Ok(())
 }

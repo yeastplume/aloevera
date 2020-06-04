@@ -29,7 +29,7 @@ pub struct Error {
 }
 
 /// Wallet errors, mostly wrappers around underlying crypto or I/O errors.
-#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+#[derive(Debug, Fail)]
 pub enum ErrorKind {
 	/// IO Error
 	#[fail(display = "I/O error: {}", _0)]
@@ -174,10 +174,6 @@ impl Display for Error {
 }
 
 impl Error {
-	/// get kind
-	pub fn kind(&self) -> ErrorKind {
-		self.inner.get_context().clone()
-	}
 	/// get cause string
 	pub fn cause_string(&self) -> String {
 		match self.cause() {

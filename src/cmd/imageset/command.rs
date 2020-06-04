@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::{Error, ErrorKind};
-use proj::Jsonable;
+use proj::Binable;
 
 use crate::cmd::common::{self, GlobalArgs};
 use vera::{VeraImageSet, VeraImageSetLoadConfig, VeraPixelDepth};
@@ -26,7 +26,7 @@ fn insert_imageset(
 	//info!("Inserting imageset into project: {}", project_file);
 	let mut proj = crate::cmd::common::load_project(project_file.clone())?;
 	proj.imagesets.insert(id.into(), imageset.clone());
-	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_json()?.as_bytes(), &None)?;
+	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_bin()?, &None)?;
 	Ok(())
 }
 

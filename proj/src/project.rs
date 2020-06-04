@@ -13,7 +13,7 @@
 // limitations under the License.
 //! Top Level Project file definition
 
-use crate::Jsonable;
+use crate::Binable;
 use crate::{Error, ErrorKind};
 use std::collections::BTreeMap;
 use vera::{VeraBitmap, VeraImageSet, VeraPalette, VeraSprite, VeraTileMap};
@@ -35,13 +35,15 @@ pub struct AloeVeraProject<'a> {
 	pub bitmaps: BTreeMap<String, VeraBitmap<'a>>,
 }
 
-impl<'a> Jsonable for AloeVeraProject<'a> {
-	fn to_json(&self) -> Result<String, Error> {
-		serde_json::to_string_pretty(&self).map_err(|e| {
-			let msg = format!("Unable to create JSON: {}", e);
-			error!("{}", msg);
-			ErrorKind::JSONError(msg).into()
-		})
+impl<'a> Binable for AloeVeraProject<'a> {
+	fn to_bin(&self) -> Result<Vec<u8>, Error> {
+		let encoded = bincode::serialize(&self)?;
+		Ok(encoded)
+	}
+
+	fn from_bin(encoded: &Vec<u8>) -> Result<Box<Self>, Error> {
+		let decoded = bincode::deserialize(&encoded[..])?;
+		Ok(Box::new(decoded))
 	}
 }
 

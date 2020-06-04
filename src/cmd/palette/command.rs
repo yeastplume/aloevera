@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::{Error, ErrorKind};
-use proj::{AloeVeraProject, Jsonable};
+use proj::{AloeVeraProject, Binable};
 
 use crate::cmd::common::{self, GlobalArgs};
 use vera::{VeraPalette, VeraPaletteLoadConfig};
@@ -77,7 +77,7 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 	let proj_json = common::read_file_string(&project_file)?;
 	let mut proj = AloeVeraProject::new_from_json(&proj_json)?;
 	proj.palettes.insert(palette.id.clone(), palette);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
+	common::output_to_file(&project_file, &proj.to_bin()?, &None)?;
 
 	Ok(())
 }

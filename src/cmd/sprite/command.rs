@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::{Error, ErrorKind};
-use proj::{AloeVeraProject, Jsonable};
+use proj::{AloeVeraProject, Binable};
 
 use crate::cmd::common::{self, GlobalArgs};
 use vera::VeraSprite;
@@ -48,7 +48,7 @@ pub fn sprite_init(g_args: &GlobalArgs, args: &SpriteInitArgs) -> Result<(), Err
 	};
 	let sprite = VeraSprite::init_from_imageset(&args.id, &imageset)?;
 	proj.sprites.insert(args.id.clone(), sprite);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
+	common::output_to_file(&project_file, &proj.to_bin()?, &None)?;
 
 	Ok(())
 }
