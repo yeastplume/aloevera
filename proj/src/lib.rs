@@ -22,10 +22,7 @@
 #![warn(missing_docs)]
 
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate serde_derive;
-extern crate serde_json;
 
 extern crate aloevera_util as util;
 extern crate aloevera_vera as vera;

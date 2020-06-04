@@ -34,8 +34,8 @@ pub fn bitmap_init(g_args: &GlobalArgs, args: &BitmapInitArgs) -> Result<(), Err
 		}
 	};
 	info!("Adding bitmap into project: {}", project_file);
-	let proj_json = common::read_file_string(&project_file)?;
-	let mut proj = AloeVeraProject::new_from_json(&proj_json)?;
+	let encoded = common::read_file_bin(&project_file)?;
+	let mut proj = *AloeVeraProject::from_bin(&encoded)?;
 	let imageset = match proj.imagesets.get(&args.imageset_id) {
 		Some(i) => i,
 		None => {

@@ -74,8 +74,8 @@ pub fn palette_import(g_args: &GlobalArgs, args: &PaletteImportArgs) -> Result<(
 		}
 	};
 	info!("Inserting palette into project: {}", project_file);
-	let proj_json = common::read_file_string(&project_file)?;
-	let mut proj = AloeVeraProject::new_from_json(&proj_json)?;
+	let encoded = common::read_file_bin(&project_file)?;
+	let mut proj = *AloeVeraProject::from_bin(&encoded)?;
 	proj.palettes.insert(palette.id.clone(), palette);
 	common::output_to_file(&project_file, &proj.to_bin()?, &None)?;
 
@@ -91,8 +91,8 @@ pub fn palette_list(g_args: &GlobalArgs) -> Result<(), Error> {
 			return Err(ErrorKind::ArgumentError("Missing project file name".to_string()).into())
 		}
 	};
-	let proj_json: String = common::read_file_string(&project_file)?;
-	let proj = AloeVeraProject::new_from_json(&proj_json)?;
+	let encoded = common::read_file_bin(&project_file)?;
+	let proj = *AloeVeraProject::from_bin(&encoded)?;
 	println!("Palettes:");
 	for (id, palette) in proj.palettes {
 		println!("  {}: {} colors", id, palette.len());

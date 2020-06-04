@@ -17,7 +17,7 @@ use std::fs::{self, File};
 use std::io::{Read, Write};
 use util::fat;
 
-use proj::AloeVeraProject;
+use proj::{AloeVeraProject, Binable};
 
 use clap::ArgMatches;
 // define what to do on argument error
@@ -127,7 +127,7 @@ pub fn load_project<'a>(project_file: Option<String>) -> Result<AloeVeraProject<
 			return Err(ErrorKind::ArgumentError("Missing project file name".to_string()).into())
 		}
 	};
-	let proj_json = read_file_string(&project_file)?;
-	let res = AloeVeraProject::new_from_json(&proj_json)?;
+	let encoded = read_file_bin(&project_file)?;
+	let res = *AloeVeraProject::from_bin(&encoded)?;
 	Ok(res)
 }

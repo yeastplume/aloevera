@@ -14,7 +14,7 @@
 //! Top Level Project file definition
 
 use crate::Binable;
-use crate::{Error, ErrorKind};
+use crate::Error;
 use std::collections::BTreeMap;
 use vera::{VeraBitmap, VeraImageSet, VeraPalette, VeraSprite, VeraTileMap};
 
@@ -58,14 +58,5 @@ impl<'a> AloeVeraProject<'a> {
 			sprites: BTreeMap::new(),
 			bitmaps: BTreeMap::new(),
 		}
-	}
-
-	/// from json
-	pub fn new_from_json(json: &str) -> Result<Self, Error> {
-		serde_json::from_str(&json).map_err(|e| {
-			let msg = format!("Unable to parse Project JSON: {}", e);
-			error!("{}", msg);
-			ErrorKind::JSONError(msg).into()
-		})
 	}
 }
