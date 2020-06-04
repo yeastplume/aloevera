@@ -42,3 +42,39 @@ macro_rules! load_app {
 		let $app = clap::App::from_yaml(yml);
 	};
 }
+
+#[macro_export]
+macro_rules! test_out {
+	($test_dir: ident, $filename: expr) => {
+		&format!("{}/{}", $test_dir, $filename)
+	};
+}
+
+#[macro_export]
+macro_rules! input_file {
+	($filename: expr) => {
+		&format!(
+			"{}/tests/data/input/{}",
+			env!("CARGO_MANIFEST_DIR"),
+			$filename
+			)
+	};
+}
+
+#[macro_export]
+macro_rules! ref_file {
+	($filename: expr) => {
+		&format!(
+			"{}/tests/data/output/{}",
+			env!("CARGO_MANIFEST_DIR"),
+			$filename
+			)
+	};
+}
+
+pub fn compare_results(output_file: &str, reference_file: &str) -> Result<(), Error> {
+	let output = cmd::common::read_file_bin(output_file)?;
+	let reference = cmd::common::read_file_bin(reference_file)?;
+	assert_eq!(output, reference);
+	Ok(())
+}
