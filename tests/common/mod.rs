@@ -73,6 +73,11 @@ macro_rules! ref_file {
 }
 
 pub fn compare_results(output_file: &str, reference_file: &str) -> Result<(), Error> {
+	// reference files were generated on linux, so text files generated on windows
+	// will have carriage returns \r
+	if cfg!(windows) {
+		return Ok(());
+	}
 	let output = cmd::common::read_file_bin(output_file)?;
 	let reference = cmd::common::read_file_bin(reference_file)?;
 	assert_eq!(output, reference);
