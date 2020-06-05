@@ -15,7 +15,7 @@
 use clap::ArgMatches;
 
 use crate::cmd::common::{self, GlobalArgs};
-use crate::cmd::{asm, bitmap, create, imageset, palette, sprite, tilemap};
+use crate::cmd::{asm, bitmap, create, imageset, list, palette, sprite, tilemap};
 use crate::{Error, ErrorKind};
 
 fn parse_and_execute(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error> {
@@ -27,6 +27,7 @@ fn parse_and_execute(g_args: &GlobalArgs, args: &ArgMatches) -> Result<(), Error
 		("bitmap", Some(args)) => bitmap::parse::execute_bitmap_command(g_args, &args),
 		("imageset", Some(args)) => imageset::parse::execute_imageset_command(g_args, &args),
 		("tilemap", Some(args)) => tilemap::parse::execute_tilemap_command(g_args, &args),
+		("list", Some(args)) => list::parse::execute_list_command(g_args, &args),
 		_ => {
 			let msg = format!("Unknown command, use 'aloevera --help' for details");
 			return Err(ErrorKind::ArgumentError(msg).into());

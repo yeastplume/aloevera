@@ -219,8 +219,12 @@ impl VeraTileDim {
 pub struct VeraTileMap {
 	/// id
 	pub id: String,
+
 	/// map mode
 	pub mode: VeraTileMapMode,
+
+	/// Keep track of imageset we're formatted to
+	pub imageset_id: String,
 
 	/// map width
 	map_width: VeraTileMapDim,
@@ -308,6 +312,7 @@ impl VeraTileMap {
 			pane_start_y: 0,
 			tiles: vec![],
 			imageset_entries: BTreeMap::new(),
+			imageset_id: imageset.id.clone(),
 		};
 		// Tile Indices init here
 		for (i, f) in imageset.frame_data.iter().enumerate() {

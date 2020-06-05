@@ -47,12 +47,12 @@ pub enum VeraPixelDepth {
 impl fmt::Display for VeraPixelDepth {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let out = match self {
-			VeraPixelDepth::BPP1 => "1",
-			VeraPixelDepth::BPP2 => "2",
-			VeraPixelDepth::BPP4 => "4",
-			VeraPixelDepth::BPP8 => "8",
+			VeraPixelDepth::BPP1 => "1bpp",
+			VeraPixelDepth::BPP2 => "2bpp",
+			VeraPixelDepth::BPP4 => "4bpp",
+			VeraPixelDepth::BPP8 => "8bpp",
 		};
-		writeln!(f, "{}", out)
+		write!(f, "{}", out)
 	}
 }
 

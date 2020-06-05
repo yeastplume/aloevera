@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::{Error, ErrorKind};
-use proj::Jsonable;
+use proj::Binable;
 
 use crate::cmd::common::{self, GlobalArgs};
 use vera::{VeraImageSet, VeraImageSetLoadConfig, VeraPixelDepth};
@@ -26,7 +26,7 @@ fn insert_imageset(
 	//info!("Inserting imageset into project: {}", project_file);
 	let mut proj = crate::cmd::common::load_project(project_file.clone())?;
 	proj.imagesets.insert(id.into(), imageset.clone());
-	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_json()?.as_bytes(), &None)?;
+	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_bin()?, &None)?;
 	Ok(())
 }
 
@@ -77,31 +77,5 @@ pub fn imageset_format(g_args: &GlobalArgs, args: &ImageSetFormatArgs) -> Result
 	imageset.format_indices(&palette, args.pixel_depth)?;
 	insert_imageset(g_args.project_file.clone(), &args.imageset_id, &imageset)?;
 
-	Ok(())
-}
-
-/// Imageset list
-pub fn imageset_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Image sets:");
-	for (id, imageset) in proj.imagesets {
-		match imageset.depth {
-			None => println!(
-				"  {}: {} {}x{} frames",
-				id,
-				imageset.frame_data.len(),
-				imageset.frame_width,
-				imageset.frame_height
-			),
-			pixel_depth => print!(
-				"  {}: {} {}x{} frames depth {}",
-				id,
-				imageset.frame_data.len(),
-				imageset.frame_width,
-				imageset.frame_height,
-				pixel_depth.unwrap()
-			),
-		}
-	}
 	Ok(())
 }

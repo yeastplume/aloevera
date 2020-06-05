@@ -28,7 +28,7 @@ pub struct Error {
 }
 
 /// Wallet errors, mostly wrappers around underlying crypto or I/O errors.
-#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+#[derive(Debug, Fail)]
 pub enum ErrorKind {
 	/// IO Error
 	#[fail(display = "I/O error: {}", _0)]
@@ -42,6 +42,9 @@ pub enum ErrorKind {
 	/// Argument Error
 	#[fail(display = "Argument Error: {}", _0)]
 	ArgumentError(String),
+	/// Errors from the Bincode crate
+	#[fail(display = "Bincode Error: {}", _0)]
+	BincodeError(bincode::Error),
 	/// Other
 	#[fail(display = "Generic error: {}", _0)]
 	GenericError(String),
@@ -74,10 +77,6 @@ impl Display for Error {
 }
 
 impl Error {
-	/// get kind
-	pub fn kind(&self) -> ErrorKind {
-		self.inner.get_context().clone()
-	}
 	/// get cause string
 	pub fn cause_string(&self) -> String {
 		match self.cause() {
@@ -121,6 +120,14 @@ impl From<ParseIntError> for Error {
 	fn from(error: ParseIntError) -> Error {
 		Error {
 			inner: Context::new(ErrorKind::ParseIntError(error)),
+		}
+	}
+}
+
+impl From<bincode::Error> for Error {
+	fn from(error: bincode::Error) -> Error {
+		Error {
+			inner: Context::new(ErrorKind::BincodeError(error)),
 		}
 	}
 }

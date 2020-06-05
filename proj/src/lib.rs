@@ -22,10 +22,7 @@
 #![warn(missing_docs)]
 
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate serde_derive;
-extern crate serde_json;
 
 extern crate aloevera_util as util;
 extern crate aloevera_vera as vera;
@@ -36,8 +33,10 @@ pub use error::{Error, ErrorKind};
 
 pub use project::AloeVeraProject;
 
-/// Just a wrapper around a serializable object
-pub trait Jsonable {
-	/// to json
-	fn to_json(&self) -> Result<String, Error>;
+/// And around the binary version
+pub trait Binable {
+	/// to binary
+	fn to_bin(&self) -> Result<Vec<u8>, Error>;
+	/// from binary
+	fn from_bin(encoded: &Vec<u8>) -> Result<Box<Self>, Error>;
 }

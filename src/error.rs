@@ -28,14 +28,14 @@ pub struct Error {
 }
 
 /// Wallet errors, mostly wrappers around underlying crypto or I/O errors.
-#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+#[derive(Debug, Fail)]
 pub enum ErrorKind {
 	/// Vera Error
 	#[fail(display = "Vera module error: {}", _0)]
-	Vera(vera::ErrorKind),
+	Vera(vera::Error),
 	/// Project Error
-	#[fail(display = "Project Error")]
-	Proj(proj::ErrorKind),
+	#[fail(display = "Project Error: {}", _0)]
+	Proj(proj::Error),
 	/// IO Error
 	#[fail(display = "I/O error: {}", _0)]
 	IO(String),
@@ -78,9 +78,9 @@ impl Display for Error {
 
 impl Error {
 	/// get kind
-	pub fn kind(&self) -> ErrorKind {
+	/*pub fn kind(&self) -> ErrorKind {
 		self.inner.get_context().clone()
-	}
+	}*/
 	/// get cause string
 	pub fn cause_string(&self) -> String {
 		match self.cause() {
@@ -101,7 +101,7 @@ impl Error {
 impl From<proj::Error> for Error {
 	fn from(error: proj::Error) -> Error {
 		Error {
-			inner: Context::new(ErrorKind::Proj(error.kind())),
+			inner: Context::new(ErrorKind::Proj(error)),
 		}
 	}
 }
@@ -109,7 +109,7 @@ impl From<proj::Error> for Error {
 impl From<vera::Error> for Error {
 	fn from(error: vera::Error) -> Error {
 		Error {
-			inner: Context::new(ErrorKind::Vera(error.kind())),
+			inner: Context::new(ErrorKind::Vera(error)),
 		}
 	}
 }

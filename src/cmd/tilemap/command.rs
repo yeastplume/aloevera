@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use proj::Jsonable;
+use proj::Binable;
 
 use crate::cmd::common::{self, GlobalArgs};
 use crate::{Error, ErrorKind};
@@ -24,7 +24,7 @@ fn insert_tilemap(
 ) -> Result<(), Error> {
 	let mut proj = crate::cmd::common::load_project(project_file.clone())?;
 	proj.tilemaps.insert(id.into(), tilemap.clone());
-	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_json()?.as_bytes(), &None)?;
+	crate::cmd::common::output_to_file(&project_file.unwrap(), &proj.to_bin()?, &None)?;
 	Ok(())
 }
 
@@ -99,23 +99,5 @@ pub fn tilemap_load(g_args: &GlobalArgs, args: &LoadTileMapArgs) -> Result<(), E
 	)?;
 	insert_tilemap(g_args.project_file.clone(), &args.id, &tilemap)?;
 
-	Ok(())
-}
-
-/// Tilemap list command
-pub fn tilemap_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Tilemaps:");
-	for (id, tilemap) in proj.tilemaps {
-		println!(
-			"  {}: map {}x{} tiles {}x{} mode {}",
-			id,
-			tilemap.map_width(),
-			tilemap.map_height(),
-			tilemap.tile_width(),
-			tilemap.tile_height(),
-			tilemap.mode
-		);
-	}
 	Ok(())
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::{Error, ErrorKind};
-use proj::{AloeVeraProject, Jsonable};
+use proj::{AloeVeraProject, Binable};
 
 use crate::cmd::common::{self, GlobalArgs};
 use vera::VeraSprite;
@@ -34,8 +34,8 @@ pub fn sprite_init(g_args: &GlobalArgs, args: &SpriteInitArgs) -> Result<(), Err
 		}
 	};
 	info!("Adding sprite into project: {}", project_file);
-	let proj_json = common::read_file_string(&project_file)?;
-	let mut proj = AloeVeraProject::new_from_json(&proj_json)?;
+	let encoded = common::read_file_bin(&project_file)?;
+	let mut proj = *AloeVeraProject::from_bin(&encoded)?;
 	let imageset = match proj.imagesets.get(&args.imageset_id) {
 		Some(i) => i,
 		None => {
@@ -48,23 +48,7 @@ pub fn sprite_init(g_args: &GlobalArgs, args: &SpriteInitArgs) -> Result<(), Err
 	};
 	let sprite = VeraSprite::init_from_imageset(&args.id, &imageset)?;
 	proj.sprites.insert(args.id.clone(), sprite);
-	common::output_to_file(&project_file, &proj.to_json()?.as_bytes(), &None)?;
+	common::output_to_file(&project_file, &proj.to_bin()?, &None)?;
 
-	Ok(())
-}
-
-/// Sprite list command
-pub fn sprite_list(g_args: &GlobalArgs) -> Result<(), Error> {
-	let proj = common::load_project(g_args.project_file.clone())?;
-	println!("Sprites:");
-	for (id, sprite) in proj.sprites {
-		print!(
-			"  {}: {}x{} depth {}",
-			id,
-			sprite.frame_width.val_as_u32(),
-			sprite.frame_height.val_as_u32(),
-			sprite.depth
-		);
-	}
 	Ok(())
 }

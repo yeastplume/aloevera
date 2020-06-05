@@ -13,8 +13,8 @@
 // limitations under the License.
 //! Top Level Project file definition
 
-use crate::Jsonable;
-use crate::{Error, ErrorKind};
+use crate::Binable;
+use crate::Error;
 use std::collections::BTreeMap;
 use vera::{VeraBitmap, VeraImageSet, VeraPalette, VeraSprite, VeraTileMap};
 
@@ -35,13 +35,15 @@ pub struct AloeVeraProject<'a> {
 	pub bitmaps: BTreeMap<String, VeraBitmap<'a>>,
 }
 
-impl<'a> Jsonable for AloeVeraProject<'a> {
-	fn to_json(&self) -> Result<String, Error> {
-		serde_json::to_string_pretty(&self).map_err(|e| {
-			let msg = format!("Unable to create JSON: {}", e);
-			error!("{}", msg);
-			ErrorKind::JSONError(msg).into()
-		})
+impl<'a> Binable for AloeVeraProject<'a> {
+	fn to_bin(&self) -> Result<Vec<u8>, Error> {
+		let encoded = bincode::serialize(&self)?;
+		Ok(encoded)
+	}
+
+	fn from_bin(encoded: &Vec<u8>) -> Result<Box<Self>, Error> {
+		let decoded = bincode::deserialize(&encoded[..])?;
+		Ok(Box::new(decoded))
 	}
 }
 
@@ -56,14 +58,5 @@ impl<'a> AloeVeraProject<'a> {
 			sprites: BTreeMap::new(),
 			bitmaps: BTreeMap::new(),
 		}
-	}
-
-	/// from json
-	pub fn new_from_json(json: &str) -> Result<Self, Error> {
-		serde_json::from_str(&json).map_err(|e| {
-			let msg = format!("Unable to parse Project JSON: {}", e);
-			error!("{}", msg);
-			ErrorKind::JSONError(msg).into()
-		})
 	}
 }
