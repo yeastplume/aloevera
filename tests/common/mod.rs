@@ -65,7 +65,7 @@ macro_rules! input_file {
 macro_rules! ref_file {
 	($filename: expr) => {
 		&format!(
-			"{}/tests/data/output/{}",
+			"{}/tests/data/ref/{}",
 			env!("CARGO_MANIFEST_DIR"),
 			$filename
 			)
