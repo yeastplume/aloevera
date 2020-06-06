@@ -5,7 +5,7 @@
 jmp start
 
 .proc load_palette
-	v_address_set $F1000, 1
+	v_address_set $1FA00, 1
 	ldx #0
 	loop:
 		lda palette,x
@@ -35,7 +35,7 @@ jmp start
 
 ;Set up our sprite
 .proc sprite_setup
-	v_address_set $F5000, 1
+	v_address_set $1FC00, 1
 	lda #$40
 	sta VERA_DATA0
 	lda #$D ; Mode 0 - 4BPP
@@ -51,9 +51,6 @@ jmp start
 	lda #$C ; Z Depth 3 - in front of layer 1
 	sta VERA_DATA0
 	lda #$90 ; Height 32, width 16, Pal offset 0
-	sta VERA_DATA0
-	v_address_set $F4000, 1 ;Enable sprite in corresponding register
-	lda #$1
 	sta VERA_DATA0
 	rts
 .endproc
@@ -77,20 +74,20 @@ jmp start
 ;little loop to run through terra's walk-cycle
 .proc main_loop
 	loop:
-		v_address_set $f5004, 0 ; Move down the screen a bit
+		v_address_set $1fc04, 0 ; Move down the screen a bit
 		inc VERA_DATA0
 		inc VERA_DATA0
-		v_address_set $f5000, 0
+		v_address_set $1fc00, 0
 		lda #$40
 		sta VERA_DATA0
 		jsr delay
 		lda #$48
 		sta VERA_DATA0
 		jsr delay
-		v_address_set $f5004, 0 ; Move down the screen a bit
+		v_address_set $1fc04, 0 ; Move down the screen a bit
 		inc VERA_DATA0
 		inc VERA_DATA0
-		v_address_set $f5000, 0
+		v_address_set $1fc00, 0
 		lda #$50
 		sta VERA_DATA0
 		jsr delay
@@ -105,10 +102,9 @@ start:
 	jsr load_sprite
 	jsr sprite_setup
 	jsr delay
-	;turn off layer 2 for effect
+	lda #$43	; sprites, rgb output
+	sta $9F29
 	v_address_set $F3000, 0
-	lda #$0 ;default, off
-	sta VERA_DATA0
 	jsr main_loop
 rts
 

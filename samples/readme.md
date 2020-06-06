@@ -8,7 +8,7 @@ The samples in this directory complement the examples found in the [Aloevera Usa
 
 For the time being, sample assembly code is only provided for ca65, the assembler tool of the [cc65 project](https://github.com/cc65/). If you're interested in running the assembly samples, you'll therefore need to have the tools `ca65` and `ld65` on your system path. Both of these tools are provided as part of the `cc65` suite.
 
-You'll also need the [x16 Emulator](https://github.com/commanderx16/x16-emulator/releases) and [ROM](https://github.com/commanderx16/x16-rom) available on your path. At the time of this writing, the target release for both is R36.
+You'll also need the [x16 Emulator](https://github.com/commanderx16/x16-emulator/releases) and [ROM](https://github.com/commanderx16/x16-rom) available on your path. At the time of this writing, the target release for both is R37.
 
 And of course, you'll need the Aloevera executable somewhere on your machine, either built locally or from a release.
 
