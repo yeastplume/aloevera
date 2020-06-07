@@ -3,39 +3,28 @@
 
 .code
 jmp start
-.proc set_mode ;target layer 1
-	;set layer 1 mode to tiled Bitmap Mode 8bpp
-	v_address_set $F2000, 1
-	lda #$E1 ;8bpp bitmap, on
-	;lda #$81 ;tiled, 8bpp, on
-	sta VERA_DATA0
-	lda #$0 ;TileW is 320
-	sta VERA_DATA0
-	;map base not used
-	lda #$00
-	sta VERA_DATA0
-	lda #$00
-	sta VERA_DATA0
-	;set tileset (bmp data) address to $00000
-	lda #$00
-	sta VERA_DATA0
-	lda #$00
-	sta VERA_DATA0
-	lda #$00 
-	sta VERA_DATA0 
-	lda #$00
-	sta VERA_DATA0 ; palette offset 0
-	;set hscale, vscale
-	v_address_set $F0001, 1
-	lda #$40
-	sta VERA_DATA0
-	lda #$40
-	sta VERA_DATA0
+.proc set_mode ;target layer 0
+	lda #$13	; layer 0, rgb output
+	sta $9F29
+	;set layer 0 mode to tiled Bitmap Mode 8bpp
+	lda #$07	; 8bpp bitmap
+	sta $9F2D
+	lda #$0		; map base not used
+	sta $9F2E
+	lda #$0		; tileset address to $00000, tilewidth = 0 (320)
+	sta $9F2F
+	sta $9F30	; hscroll=0, palette base = 0
+	sta $9F31	
+	sta $9F32	; vscroll=0
+	sta $9F33
+	lda #$40	; hscale, vscale
+	sta $9F2A
+	sta $9F2B
 	rts
 .endproc
 
 .proc load_palette
-	v_address_set $F1000, 1
+	v_address_set $1FA00, 1
 	set_const_16 $00, palette
 
 	TARGET = 512;loop until size reached
@@ -69,10 +58,8 @@ start:
 	jsr load_bitmap
 	;jsr clear_map
 	;jsr load_tilemap
-	;turn off layer 2 to see our handiwork
-	v_address_set $F3000, 0
-	lda #$0 ;default, off
-	sta VERA_DATA0
+	lda #$13	; layer 0, rgb output
+	sta $9F29
 rts
 
 .segment "RODATA"

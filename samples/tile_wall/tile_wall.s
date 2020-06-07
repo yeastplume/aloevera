@@ -3,29 +3,25 @@
 
 .code
 jmp start
-.proc set_mode ;target layer 1
-	;set layer 1 mode to tiled 4bpp, 64x32 
-	v_address_set $F2000, 1
-	lda #$61 ;tiled, 4bpp, on
-	;lda #$81 ;tiled, 8bpp, on
-	sta VERA_DATA0
-	lda #$31 ;16x16 tile, 64x32 map width/height
-	sta VERA_DATA0
-	;set tilemap address to $10000
-	lda #$00
-	sta VERA_DATA0
-	lda #$40
-	sta VERA_DATA0
-	;set tileset (imageset) address to $1A800
-	lda #$00
-	sta VERA_DATA0
-	lda #$6A
-	sta VERA_DATA0
+.proc set_mode ;target layer 0
+	lda #$12	; 4bpp, 64x32 map
+	sta $9F2D	
+	lda #$00	; map base $00000
+	sta $9F2E
+	lda #$d7	; tile base $1A800, 16x16 tiles
+	sta $9F2F
+	lda #$0		; zero out hscroll and vscroll hi and low
+	sta $9F30
+	sta $9F31
+	sta $9F32
+	sta $9F33
+	lda #$33	; enable layer 0 and 1, rgb
+	sta $9F29
 	rts
 .endproc
 
 .proc load_palette
-	v_address_set $F1000, 1
+	v_address_set $1FA00, 1
 	ldx #0
 	loop:
 		lda palette,x
@@ -57,7 +53,7 @@ jmp start
 .proc clear_map
 	VAR_ENTRIES_WRITTEN = $00
 	set_const_16 VAR_ENTRIES_WRITTEN, 0
-	v_address_set $10000, 1
+	v_address_set $00000, 1
 	loop:
 		;index at 0 is an empty tile in our map
 		lda #0
@@ -89,7 +85,7 @@ jmp start
 		sta VERA_ADDR_LO
 		lda $01
 		sta VERA_ADDR_MID
-		lda #$11
+		lda #$10
 		sta VERA_ADDR_HI
 		set_const_16 VAR_BYTES_WRITTEN_CUR_ROW, 0
 		loop: 
@@ -105,7 +101,7 @@ jmp start
 .endproc
 
 .proc load_tilemap_conflated
-	v_address_set $10000, 1
+	v_address_set $00000, 1
 	set_const_16 $00, tilemap_conflated
 
 	TARGET = 4096 ;loop until size reached
@@ -126,10 +122,9 @@ start:
 	jsr load_tilemap
 	;Alternatively, comment in below for the conflated straight-load version
 	;jsr load_tilemap_conflated
-	;turn off layer 2 to see our handiwork
-	v_address_set $F3000, 0
-	lda #$0 ;default, off
-	sta VERA_DATA0
+	;turn off layer 1 to see our handiwork
+	lda #$13	; layer 0 only, rgb
+	sta $9F29
 rts
 
 .segment "RODATA"
