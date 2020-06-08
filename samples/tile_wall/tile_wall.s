@@ -4,18 +4,18 @@
 .code
 jmp start
 .proc set_mode ;target layer 0
-	lda #$12	; 4bpp, 64x32 map
-	sta $9F2D	
-	lda #$00	; map base $00000
+	lda #$12 ; 4bpp, 64x32 map
+	sta $9F2D
+	lda #$80 ; map base $10000
 	sta $9F2E
-	lda #$d7	; tile base $1A800, 16x16 tiles
+	lda #$d7 ; tile base $1A800, 16x16 tiles
 	sta $9F2F
-	lda #$0		; zero out hscroll and vscroll hi and low
+	lda #$0 ; zero out hscroll and vscroll hi and low
 	sta $9F30
 	sta $9F31
 	sta $9F32
 	sta $9F33
-	lda #$33	; enable layer 0 and 1, rgb
+	lda #$33; enable layer 0 and 1, rgb
 	sta $9F29
 	rts
 .endproc
@@ -53,7 +53,7 @@ jmp start
 .proc clear_map
 	VAR_ENTRIES_WRITTEN = $00
 	set_const_16 VAR_ENTRIES_WRITTEN, 0
-	v_address_set $00000, 1
+	v_address_set $10000, 1
 	loop:
 		;index at 0 is an empty tile in our map
 		lda #0
@@ -85,10 +85,10 @@ jmp start
 		sta VERA_ADDR_LO
 		lda $01
 		sta VERA_ADDR_MID
-		lda #$10
+		lda #$11
 		sta VERA_ADDR_HI
 		set_const_16 VAR_BYTES_WRITTEN_CUR_ROW, 0
-		loop: 
+		loop:
 			lda ($02),y
 			sta VERA_DATA0
 			add_constant_16 VAR_BYTES_WRITTEN_TOTAL, 1
@@ -101,7 +101,7 @@ jmp start
 .endproc
 
 .proc load_tilemap_conflated
-	v_address_set $00000, 1
+	v_address_set $10000, 1
 	set_const_16 $00, tilemap_conflated
 
 	TARGET = 4096 ;loop until size reached
