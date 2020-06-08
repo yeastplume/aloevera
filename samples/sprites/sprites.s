@@ -57,7 +57,7 @@ jmp start
 
 ;Small delay loop between frames
 .proc delay
-	ldx #$02
+	ldx #04
 	lda #$ff
 	ldy #$ff
 	loop:
