@@ -362,13 +362,16 @@ fn image_flip() -> Result<(), Error> {
 	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
 
 	let orig = set.frame_data[2].clone();
+	println!("{:?}", orig.flip_hashes);
 	println!("{}", orig);
 	let h_flipped = orig.h_flip();
 	println!("{}", h_flipped);
+	assert_eq!(orig.flip_hashes[0], h_flipped.calc_hash());
 	assert_eq!(h_flipped.data[7].pal_index, Some(7));
 	let v_flipped = h_flipped.v_flip();
 	println!("{}", v_flipped);
 	assert_eq!(v_flipped.data[63].pal_index, Some(7));
+	assert_eq!(orig.flip_hashes[2], v_flipped.calc_hash());
 
 	let orig = set.frame_data[3].clone();
 	println!("{}", orig);

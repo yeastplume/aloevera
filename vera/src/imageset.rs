@@ -132,8 +132,8 @@ pub struct VeraImage {
 	/// Background colour on 1BPP mode
 	pub background: u8,
 	/// Also store hashes of each rotation
-	/// 90, 180, 270
-	pub rotation_hashes: [u64; 3],
+	/// h_flipped, v_flipped, h_flipped and v_flipped
+	pub flip_hashes: [u64; 3],
 }
 
 impl Hash for VeraImage {
@@ -194,7 +194,7 @@ impl VeraImage {
 			depth: VeraPixelDepth::BPP8,
 			foreground: 0,
 			background: 0,
-			rotation_hashes: [0; 3],
+			flip_hashes: [0; 3],
 		}
 	}
 
@@ -265,6 +265,16 @@ impl VeraImage {
 			}
 		}
 		ret
+	}
+
+	/// Store flip hashes
+	pub fn store_flip_hashes(&mut self) {
+		let h_flipped = self.h_flip();
+		self.flip_hashes[0] = h_flipped.calc_hash();
+		let v_flipped = self.v_flip();
+		self.flip_hashes[1] = v_flipped.calc_hash();
+		let both = h_flipped.v_flip();
+		self.flip_hashes[2] = both.calc_hash();
 	}
 }
 
@@ -413,6 +423,14 @@ impl VeraImageSet {
 		Ok(())
 	}
 
+	/// Calc/Store all the hashes of vflipped or hflipped
+	/// versions of the frame
+	pub fn store_flip_hashes(&mut self) {
+		for f in self.frame_data.iter_mut() {
+			f.store_flip_hashes();
+		}
+	}
+
 	/// Format the stored indices with a given palette and colour depth
 	/// Should fail if any frame in the set contains a range of colours
 	/// that can't be found within a single 2^BPP length range in the
@@ -504,6 +522,7 @@ impl VeraImageSet {
 			}
 		}
 		self.depth = Some(depth);
+		self.store_flip_hashes();
 		self.formatted = true;
 		Ok(())
 	}
