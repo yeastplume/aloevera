@@ -182,6 +182,27 @@ fn tilemap_128_x_32_x_16_4bpp() -> Result<(), Error> {
 	// And a correct one
 	let mapdata = include_bytes!("data/tilemap/tile_wall-map.png");
 	tilemap.load_from_png(mapdata.to_vec(), None, 0, 10, 0)?;
+	// Check rotated tiles
+	// h_flipped
+	println!("Rotated tile at index 1: {}", tilemap.get_tiles()[1]);
+	assert_eq!(
+		tilemap.get_tiles()[1],
+		VeraTileMapEntry::Tile234(14, 0, 0, 1)
+	);
+
+	// v_flipped
+	println!("Rotated tile at index 2: {}", tilemap.get_tiles()[2]);
+	assert_eq!(
+		tilemap.get_tiles()[2],
+		VeraTileMapEntry::Tile234(14, 0, 1, 0)
+	);
+
+	// both
+	println!("Rotated tile at index 3: {}", tilemap.get_tiles()[3]);
+	assert_eq!(
+		tilemap.get_tiles()[3],
+		VeraTileMapEntry::Tile234(14, 0, 1, 1)
+	);
 
 	println!("{}", tilemap);
 	let code = tilemap.assemble()?;
