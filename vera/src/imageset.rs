@@ -131,6 +131,9 @@ pub struct VeraImage {
 	pub foreground: u8,
 	/// Background colour on 1BPP mode
 	pub background: u8,
+	/// Also store hashes of each rotation
+	/// 90, 180, 270
+	pub rotation_hashes: [u64; 3],
 }
 
 impl Hash for VeraImage {
@@ -191,10 +194,11 @@ impl VeraImage {
 			depth: VeraPixelDepth::BPP8,
 			foreground: 0,
 			background: 0,
+			rotation_hashes: [0; 3],
 		}
 	}
 
-	/// push an pixel value
+	/// push a pixel value
 	pub fn push_pixel(&mut self, r: u8, g: u8, b: u8, pal_index: Option<u8>) {
 		self.data.push(VeraPixel {
 			r,
@@ -233,6 +237,34 @@ impl VeraImage {
 		//error!("{:?}", self);
 		self.hash(&mut hasher);
 		hasher.finish()
+	}
+
+	/// Return a new image from this one, horizontally flipped
+	pub fn h_flip(&self) -> VeraImage {
+		let mut ret = self.clone();
+		ret.data = vec![];
+		let width = self.width as usize;
+		let height = self.height as usize;
+		for j in 0..height {
+			for i in (0..width).rev() {
+				ret.data.push(self.data[j * width + i].clone());
+			}
+		}
+		ret
+	}
+
+	/// Return a new image from this one, vertically flipped
+	pub fn v_flip(&self) -> VeraImage {
+		let mut ret = self.clone();
+		ret.data = vec![];
+		let width = self.width as usize;
+		let height = self.height as usize;
+		for j in (0..height).rev() {
+			for i in 0..width {
+				ret.data.push(self.data[j * width + i].clone());
+			}
+		}
+		ret
 	}
 }
 
