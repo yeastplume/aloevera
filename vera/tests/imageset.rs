@@ -344,9 +344,9 @@ fn imageset_pal_64_4bpp() -> Result<(), Error> {
 	Ok(())
 }
 
-/*#[test]
-fn imageset_crash() -> Result<(), Error> {
-	let test_png = include_bytes!("data/imageset/crash-test-pal.png");
+#[test]
+fn image_flip() -> Result<(), Error> {
+	let test_png = include_bytes!("data/imageset/indexed-4bpp-pal-64.png");
 	let pal_config = VeraPaletteLoadConfig {
 		direct_load: true,
 		include_defaults: false,
@@ -354,15 +354,33 @@ fn imageset_crash() -> Result<(), Error> {
 		..VeraPaletteLoadConfig::default()
 	};
 	let palette = VeraPalette::derive_from_png("pal", test_png.to_vec(), &pal_config)?;
-	println!("{}", palette);
 
-	let imageset_png = include_bytes!("data/imageset/crash-test-imageset.png");
-	let mut set = VeraImageSet::new("imageset_1", 16, 16);
+	let mut set = VeraImageSet::new("imageset_1", 8, 8);
 	let config = VeraImageSetLoadConfig::default();
-	set.load_from_png(imageset_png.to_vec(), &config)?;
+
+	set.load_from_png(test_png.to_vec(), &config)?;
 	set.format_indices(&palette, VeraPixelDepth::BPP4)?;
-	println!("{}", set);
+
+	let orig = set.frame_data[2].clone();
+	println!("{:?}", orig.flip_hashes);
+	println!("{}", orig);
+	let h_flipped = orig.h_flip();
+	println!("{}", h_flipped);
+	assert_eq!(orig.flip_hashes[0], h_flipped.calc_hash());
+	assert_eq!(h_flipped.data[7].pal_index, Some(7));
+	let v_flipped = h_flipped.v_flip();
+	println!("{}", v_flipped);
+	assert_eq!(v_flipped.data[63].pal_index, Some(7));
+	assert_eq!(orig.flip_hashes[2], v_flipped.calc_hash());
+
+	let orig = set.frame_data[3].clone();
+	println!("{}", orig);
+	let h_flipped = orig.h_flip();
+	println!("{}", h_flipped);
+	assert_eq!(h_flipped.data[7].pal_index, Some(2));
+	let v_flipped = h_flipped.v_flip();
+	println!("{}", v_flipped);
+	assert_eq!(v_flipped.data[63].pal_index, Some(2));
 
 	Ok(())
-
-}*/
+}

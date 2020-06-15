@@ -80,7 +80,9 @@ impl fmt::Display for VeraTileMapEntry {
 		let out = match self {
 			VeraTileMapEntry::Text0(i, _, _) => format!("{}", i),
 			VeraTileMapEntry::Text1(i, _) => format!("{}", i),
-			VeraTileMapEntry::Tile234(i, _, _, _) => format!("{}", i),
+			VeraTileMapEntry::Tile234(i, o, h, v) => {
+				format!("Index: {}, offset: {}, h_flip: {}, v_flip: {}", i, o, h, v)
+			}
 		};
 		write!(f, "{}", out)
 	}
@@ -115,11 +117,17 @@ impl Assemblable for VeraTileMapEntry {
 				(*index, byte_1)
 			}
 			VeraTileMapEntry::Text1(index, foreground) => (*index, *foreground),
-			VeraTileMapEntry::Tile234(index, pal_offset, _, _) => {
+			VeraTileMapEntry::Tile234(index, pal_offset, h_flip, v_flip) => {
 				let byte0 = (index & 0x00ff) as u8;
 				let mut byte1 = pal_offset / 16 << 4;
 				let high_index = (index >> 8) as u8 & 3;
 				byte1 |= high_index as u8;
+				if *h_flip == 1 {
+					byte1 |= 0x04;
+				}
+				if *v_flip == 1 {
+					byte1 |= 0x08;
+				}
 				(byte0, byte1)
 			}
 		};
@@ -253,9 +261,9 @@ pub struct VeraTileMap {
 	/// Map data itself
 	tiles: Vec<VeraTileMapEntry>,
 
-	/// Also going to keep a map of tile hashes to indices/pal offset when initialized
+	/// Also going to keep a map of tile hashes to indices/pal offset/hflip/vflip when initialized
 	/// from an imageset
-	imageset_entries: BTreeMap<u64, (usize, u8)>,
+	imageset_entries: BTreeMap<u64, (usize, u8, u8, u8)>,
 }
 
 impl fmt::Display for VeraTileMap {
@@ -317,7 +325,14 @@ impl VeraTileMap {
 		// Tile Indices init here
 		for (i, f) in imageset.frame_data.iter().enumerate() {
 			res.imageset_entries
-				.insert(f.calc_hash(), (i, f.pal_offset));
+				.insert(f.calc_hash(), (i, f.pal_offset, 0, 0));
+			// And possible h/v flip iterations as well
+			res.imageset_entries
+				.insert(f.flip_hashes[0], (i, f.pal_offset, 1, 0));
+			res.imageset_entries
+				.insert(f.flip_hashes[1], (i, f.pal_offset, 0, 1));
+			res.imageset_entries
+				.insert(f.flip_hashes[2], (i, f.pal_offset, 1, 1));
 		}
 		Ok(res)
 	}
@@ -354,10 +369,12 @@ impl VeraTileMap {
 		pal_offset: u8,
 		foreground: u8,
 		background: u8,
+		h_flip: u8,
+		v_flip: u8,
 	) -> Result<VeraTileMapEntry, Error> {
 		match self.mode {
 			VeraTileMapMode::Tile2BPP | VeraTileMapMode::Tile4BPP | VeraTileMapMode::Tile8BPP => {
-				Ok(VeraTileMapEntry::Tile234(index, pal_offset, 0, 0))
+				Ok(VeraTileMapEntry::Tile234(index, pal_offset, h_flip, v_flip))
 			}
 			VeraTileMapMode::TextBPP1_16 => {
 				Ok(VeraTileMapEntry::Text0(index as u8, foreground, background))
@@ -463,12 +480,14 @@ impl VeraTileMap {
 			}
 			let hash = f.calc_hash();
 			match self.imageset_entries.get(&hash) {
-				Some((index, pal_offset)) => {
+				Some((index, pal_offset, h_flip, v_flip)) => {
 					self.tiles.push(self.entry_from_image(
 						*index as u16,
 						*pal_offset,
 						f.foreground,
 						f.background,
+						*h_flip,
+						*v_flip,
 					)?);
 				}
 				None => {
