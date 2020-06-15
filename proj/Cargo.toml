@@ -1,6 +1,6 @@
 [package]
 name = "aloevera_proj"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Revcore Technologies Ltd."]
 description = "Aloevera project file definitions"
 license = "Apache-2.0"
@@ -19,5 +19,5 @@ failure = "0.1"
 failure_derive = "0.1"
 bincode = "1.2"
 
-aloevera_util = { path = "../util", version = "0.2.3" }
-aloevera_vera = { path = "../vera", version = "0.2.3" }
+aloevera_util = { path = "../util", version = "0.2.4" }
+aloevera_vera = { path = "../vera", version = "0.2.4" }
