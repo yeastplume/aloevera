@@ -39,7 +39,7 @@ jmp start
 	v_address_set $1A800, 1
 	set_const_16 $00, imageset
 
-	TARGET = 2176 ;loop until size reached
+	TARGET = 2304 ;loop until size reached
 
 	loop:
 		lda ($00),y
